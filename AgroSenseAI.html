@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSense AI: Smart Farm Assistant</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+        /* Custom Tailwind Configuration for font and animations */
+        @layer base {
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        /* Custom scrollbar for text areas */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(241, 241, 241, 0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+        
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .glass-panel-dark {
+             background-color: rgba(236, 253, 245, 0.85); /* emerald-50 with opacity */
+             backdrop-filter: blur(4px);
+        }
+        
+        /* Slider Transition */
+        .bg-slide {
+            transition: opacity 2000ms ease-in-out;
+        }
+    </style>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-inter min-h-screen flex flex-col bg-gray-900">
+    
+    <!-- Background Slider Container -->
+    <div id="bg-slider" class="fixed inset-0 z-0">
+        <!-- Images injected by JS -->
+    </div>
+
+    <!-- Dark Overlay to ensure text readability -->
+    <div class="fixed inset-0 bg-black/20 pointer-events-none z-1"></div>
+
+    <!-- Header Section -->
+    <header class="relative z-10 bg-gradient-to-r from-green-800/90 to-emerald-700/90 backdrop-blur-md p-4 shadow-lg flex justify-between items-center rounded-b-lg border-b border-white/20">
+        <h1 class="text-white text-2xl md:text-3xl font-bold flex items-center gap-2 drop-shadow-sm">
+            🌱 AgroSense AI
+        </h1>
+        <nav>
+            <div id="auth-status" class="flex items-center space-x-4">
+                <!-- User name and location will be injected here by JS -->
+                <span id="welcome-message" class="text-white text-sm md:text-base hidden sm:inline font-medium drop-shadow-sm"></span>
+                <button id="logout-button" class="bg-white/20 hover:bg-white/30 text-white border border-white/40 font-semibold py-2 px-4 rounded-md shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hidden backdrop-blur-sm">
+                    Logout
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="relative z-10 p-4 md:p-8 max-w-7xl mx-auto w-full flex-grow">
+        <!-- Loading Screen -->
+        <section id="loading-screen" class="flex flex-col items-center justify-center min-h-[60vh]">
+            <div class="glass-panel p-8 rounded-full shadow-2xl">
+                <div id="loading-spinner" class="animate-spin rounded-full h-12 w-12 border-4 border-emerald-100 border-t-emerald-600"></div>
+            </div>
+            <p id="loading-message" class="text-xl font-bold text-white mt-6 drop-shadow-md">Loading AgroSense AI...</p>
+            <div id="loading-error-detail" class="mt-4 bg-red-100/90 text-red-700 p-4 rounded-md text-sm whitespace-pre-wrap hidden backdrop-blur-sm shadow-lg max-w-lg"></div>
+        </section>
+
+        <!-- Authentication Page (Login/Sign Up) -->
+        <section id="auth-page" class="hidden flex justify-center items-center py-10">
+            <div class="glass-panel p-8 rounded-xl shadow-2xl w-full max-w-md border border-white/50">
+                <h2 id="auth-title" class="text-3xl font-bold text-center text-gray-800 mb-6">Login to AgroSense AI</h2>
+                <div id="auth-error-message" class="bg-red-100 text-red-700 p-3 rounded-md mb-4 text-sm hidden"></div>
+                <div id="auth-success-message" class="bg-green-100 text-green-700 p-3 rounded-md mb-4 text-sm hidden"></div>
+                <form id="auth-form" class="space-y-5">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="auth-email">Email Address:</label>
+                        <input type="email" id="auth-email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="auth-password">Password:</label>
+                        <input type="password" id="auth-password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80" required>
+                    </div>
+                    <button type="submit" id="auth-submit-button" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">Login</button>
+                </form>
+                <p class="mt-6 text-center text-gray-600 text-sm">
+                    Don't have an account? <button id="toggle-auth-mode" class="text-emerald-600 hover:text-emerald-800 font-semibold transition duration-200">Sign Up</button>
+                </p>
+            </div>
+        </section>
+
+        <!-- Profile Setup Page -->
+        <section id="profile-setup-page" class="hidden flex justify-center items-center py-10">
+            <div class="glass-panel p-8 rounded-xl shadow-2xl w-full max-w-md border border-white/50">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Set Up Your Farm Profile</h2>
+                <div id="profile-error-message" class="bg-red-100 text-red-700 p-3 rounded-md mb-4 text-sm hidden"></div>
+                <div id="profile-success-message" class="bg-green-100 text-green-700 p-3 rounded-md mb-4 text-sm hidden"></div>
+                <form id="profile-form" class="space-y-5">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="profile-name">Your Name:</label>
+                        <input type="text" id="profile-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/80" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="farm-location">Farm Location (e.g., Kisii, Kenya):</label>
+                        <input type="text" id="farm-location" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/80" required>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">Create Profile</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Farmer Dashboard -->
+        <section id="farmer-dashboard" class="hidden container mx-auto glass-panel rounded-xl shadow-2xl border border-white/60 overflow-hidden">
+            <div class="p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Farm Dashboard</h2>
+
+                <!-- Navigation Tabs -->
+                <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
+                    <button id="tab-get-recommendations" class="px-6 py-3 text-lg font-semibold transition-colors duration-300 ease-in-out text-emerald-600 border-b-2 border-emerald-600 whitespace-nowrap">
+                        Get New Recommendations
+                    </button>
+                    <button id="tab-recommendation-history" class="ml-4 px-6 py-3 text-lg font-semibold transition-colors duration-300 ease-in-out text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        My Recommendation History
+                    </button>
+                    <button id="tab-disease-detection" class="ml-4 px-6 py-3 text-lg font-semibold transition-colors duration-300 ease-in-out text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        🦠 Disease Detection
+                    </button>
+                </div>
+
+                <!-- Tab Content: Get New Recommendations -->
+                <div id="tab-content-get-recommendations">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Simulated Data Input Form -->
+                        <div class="glass-panel-dark p-6 rounded-lg shadow-inner border border-emerald-100/50 h-fit">
+                            <h3 class="text-xl font-bold text-emerald-800 mb-4 flex items-center">
+                                <span class="mr-2">📝</span> Farm Conditions
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="crop-type">Crop Type:</label>
+                                    <select id="crop-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90">
+                                        <option>Maize</option>
+                                        <option>Wheat</option>
+                                        <option>Beans</option>
+                                        <option>Potatoes</option>
+                                        <option>Sorghum</option>
+                                        <option>Rice</option>
+                                        <option>Coffee</option>
+                                        <option>Tea</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="soil-moisture">Soil Moisture:</label>
+                                        <select id="soil-moisture" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90">
+                                            <option>Very Dry</option>
+                                            <option>Dry</option>
+                                            <option>Moderate</option>
+                                            <option>Wet</option>
+                                            <option>Saturated</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="temperature">Temp (°C):</label>
+                                        <input type="number" id="temperature" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90" value="25" min="0" max="50" step="1">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                     <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="humidity">Humidity (%):</label>
+                                        <input type="number" id="humidity" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90" value="60" min="0" max="100" step="1">
+                                    </div>
+                                     <div>
+                                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="pest-disease">Pest Risk:</label>
+                                        <select id="pest-disease" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90">
+                                            <option>No Risk</option>
+                                            <option>Low Risk</option>
+                                            <option>Moderate Risk</option>
+                                            <option>High Risk</option>
+                                            <option>Infestation</option>
+                                        </select>
+                                    </div>
+                                </div>
+                               
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="weather-forecast">Weekly Forecast:</label>
+                                    <select id="weather-forecast" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90">
+                                        <option>Sunny, no rain</option>
+                                        <option>Partly Cloudy, light rain</option>
+                                        <option>Rainy, heavy downpours</option>
+                                        <option>Cloudy, cool temperatures</option>
+                                        <option>Drought conditions</option>
+                                    </select>
+                                </div>
+                                
+                                <button id="generate-recommendations-button" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-[1.02] flex justify-center items-center mt-4">
+                                    <span>Generate AI Insights</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AI Generated Recommendations Display -->
+                        <div class="flex flex-col h-full">
+                            <div class="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-200 flex-grow flex flex-col min-h-[500px]">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center justify-between">
+                                    <span class="flex items-center"><span class="mr-2">🤖</span> AI Recommendations</span>
+                                    <span id="ai-timestamp" class="text-xs text-gray-500 font-normal"></span>
+                                </h3>
+                                
+                                <div id="ai-loading-spinner" class="flex flex-col items-center justify-center h-64 hidden flex-grow">
+                                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-emerald-600"></div>
+                                    <p class="mt-4 text-emerald-700 font-medium animate-pulse">Analyzing farm data...</p>
+                                </div>
+                                
+                                <div id="ai-error-display" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-md text-sm whitespace-pre-wrap hidden mb-4"></div>
+                                
+                                <div id="ai-response-display" class="bg-white/60 p-4 rounded-lg text-gray-700 text-base leading-relaxed whitespace-pre-wrap overflow-y-auto custom-scrollbar flex-grow hidden border border-gray-100 shadow-inner"></div>
+                                
+                                <div id="ai-placeholder-message" class="flex flex-col items-center justify-center h-full text-center text-gray-400 p-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                    </svg>
+                                    <p>Enter your farm conditions on the left and click "Generate AI Insights" to receive a personalized report.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Recommendation History -->
+                <div id="tab-content-recommendation-history" class="hidden">
+                    <div class="glass-panel p-6 rounded-xl shadow-lg border border-white/50">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">My Past Reports</h3>
+                            <button onclick="loadRecommendationHistory()" class="text-sm text-emerald-600 hover:text-emerald-800 underline">Refresh</button>
+                        </div>
+                        <div id="history-loading" class="text-center py-8 hidden">
+                             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+                        </div>
+                        <div id="recommendation-history-list" class="space-y-4">
+                            <!-- Items injected here -->
+                        </div>
+                        <div id="history-empty-state" class="text-center py-12 hidden">
+                            <p class="text-gray-500">No past recommendations found. Generate your first report!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Disease Detection -->
+                <div id="tab-content-disease-detection" class="hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Image Input & Camera Section -->
+                        <div class="glass-panel-dark p-6 rounded-lg shadow-inner border border-emerald-100/50 h-fit">
+                            <h3 class="text-xl font-bold text-emerald-800 mb-4 flex items-center">
+                                <span class="mr-2">📷</span> Crop Image Analysis
+                            </h3>
+                            <div class="space-y-4">
+                                <!-- Camera Preview Area -->
+                                <div class="border-2 border-dashed border-emerald-300 rounded-lg p-6 bg-emerald-50/30 text-center">
+                                    <div id="camera-preview" class="hidden">
+                                        <video id="video-stream" class="w-full rounded-lg bg-black max-h-64 object-cover"></video>
+                                        <div class="flex gap-2 mt-4 justify-center">
+                                            <button id="capture-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                                                📸 Capture Photo
+                                            </button>
+                                            <button id="stop-camera-button" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                                                Stop Camera
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="camera-placeholder" class="py-8">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <p class="text-emerald-700 font-semibold mb-4">Use your device camera to capture crop images</p>
+                                    </div>
+                                </div>
+
+                                <!-- Image Upload Area -->
+                                <div class="border-2 border-dashed border-blue-300 rounded-lg p-6 bg-blue-50/30 text-center cursor-pointer hover:bg-blue-50/50 transition" id="upload-area">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    <p class="text-blue-700 font-semibold">Drag and drop or click to upload</p>
+                                    <p class="text-xs text-blue-600 mt-1">JPG, PNG, or WebP up to 10MB</p>
+                                    <input type="file" id="image-upload" class="hidden" accept="image/jpeg,image/png,image/webp">
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="flex flex-col gap-3">
+                                    <button id="use-camera-button" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 flex justify-center items-center gap-2">
+                                        <span>📷 Use Camera</span>
+                                    </button>
+                                    <button id="upload-from-files-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 flex justify-center items-center gap-2">
+                                        <span>📁 Upload File</span>
+                                    </button>
+                                </div>
+
+                                <!-- Image Preview -->
+                                <div id="image-preview-container" class="hidden">
+                                    <img id="image-preview" class="w-full rounded-lg border border-gray-300 max-h-64 object-cover">
+                                    <button id="clear-image-button" class="w-full mt-3 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                                        Clear Image
+                                    </button>
+                                </div>
+
+                                <!-- Crop Type Selection for Disease Detection -->
+                                <div id="crop-selection-disease" class="bg-white/60 p-4 rounded-lg border border-emerald-200">
+                                    <label class="block text-gray-700 text-sm font-semibold mb-2">Crop Type (for better detection):</label>
+                                    <select id="disease-crop-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90">
+                                        <option>Maize</option>
+                                        <option>Wheat</option>
+                                        <option>Beans</option>
+                                        <option>Potatoes</option>
+                                        <option>Sorghum</option>
+                                        <option>Rice</option>
+                                        <option>Coffee</option>
+                                        <option>Tea</option>
+                                        <option>Tomato</option>
+                                        <option>Lettuce</option>
+                                        <option>Cabbage</option>
+                                        <option>Pepper</option>
+                                        <option>Onion</option>
+                                        <option>Carrot</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+
+                                <!-- Analyze Button -->
+                                <button id="analyze-disease-button" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-[1.02] flex justify-center items-center" disabled>
+                                    <span>🔍 Analyze for Disease</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Results Display -->
+                        <div class="flex flex-col h-full">
+                            <div class="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-200 flex-grow flex flex-col min-h-[500px]">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center justify-between">
+                                    <span class="flex items-center"><span class="mr-2">🤖</span> Analysis Results</span>
+                                    <span id="disease-timestamp" class="text-xs text-gray-500 font-normal"></span>
+                                </h3>
+                                
+                                <div id="disease-loading-spinner" class="flex flex-col items-center justify-center h-64 hidden flex-grow">
+                                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-600"></div>
+                                    <p class="mt-4 text-red-700 font-medium animate-pulse">Analyzing image for crop diseases...</p>
+                                </div>
+                                
+                                <div id="disease-error-display" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-md text-sm whitespace-pre-wrap hidden mb-4"></div>
+                                
+                                <div id="disease-response-display" class="bg-white/60 p-4 rounded-lg text-gray-700 text-base leading-relaxed whitespace-pre-wrap overflow-y-auto custom-scrollbar flex-grow hidden border border-gray-100 shadow-inner"></div>
+                                
+                                <div id="disease-placeholder-message" class="flex flex-col items-center justify-center h-full text-center text-gray-400 p-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p>Upload or capture a crop image and click "Analyze for Disease" to get a detailed disease assessment.</p>
+                                </div>
+
+                                <!-- Disease Detection History -->
+                                <div id="disease-history-section" class="mt-6 pt-4 border-t border-gray-200 hidden">
+                                    <h4 class="font-bold text-gray-700 mb-3">Recent Analyses</h4>
+                                    <div id="disease-history-list" class="space-y-2 max-h-32 overflow-y-auto">
+                                        <!-- Items injected here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Custom Alert Modal (instead of window.alert) -->
+    <div id="custom-alert-modal" class="fixed inset-0 bg-gray-900/50 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm animate-fade-in-up transform scale-100">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Alert
+            </h3>
+            <p id="custom-alert-message" class="text-gray-700 mb-6"></p>
+            <div class="flex justify-end">
+                <button id="custom-alert-close" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-md transition duration-300 ease-in-out shadow-md">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // --- Configuration & Constants ---
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const apiKey = typeof __api_key !== 'undefined' ? __api_key : 'AIzaSyA7_eadb-3Vsb6A8Y4X9fQYJy1PXsEn1Ck';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Configuration Logic
+        let firebaseConfig;
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+            firebaseConfig = JSON.parse(__firebase_config);
+        } else {
+             // Fallback/Local config - only used if environment variable is missing
+            firebaseConfig = {
+                apiKey: "AIzaSyC-NpqjjsBz9kZhmztF9JghVSrzUp5dNzo",
+                authDomain: "agrosense-ai-5e7ec.firebaseapp.com",
+                projectId: "agrosense-ai-5e7ec",
+                storageBucket: "agrosense-ai-5e7ec.firebasestorage.app",
+                messagingSenderId: "1003077383390",
+                appId: "1:1003077383390:web:655366d833cd49bfd3be4f",
+                measurementId: "G-Q7ZDDFGHHF"
+            };
+        }
+
+        // --- State Management ---
+        let db;
+        let auth;
+        let currentUser = null;
+        let currentUserProfile = null;
+        let currentAppPage = 'loading'; 
+        let currentDashboardTab = 'getRecommendations'; 
+        let unsubscribeHistory = null; // Listener cleanup function
+
+        // --- DOM Elements ---
+        const loadingScreen = document.getElementById('loading-screen');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const loadingMessage = document.getElementById('loading-message');
+        const loadingErrorDetail = document.getElementById('loading-error-detail');
+
+        const authPage = document.getElementById('auth-page');
+        const profileSetupPage = document.getElementById('profile-setup-page');
+        const farmerDashboard = document.getElementById('farmer-dashboard');
+
+        // Auth & Profile
+        const authTitle = document.getElementById('auth-title');
+        const authForm = document.getElementById('auth-form');
+        const authEmailInput = document.getElementById('auth-email');
+        const authPasswordInput = document.getElementById('auth-password');
+        const authSubmitButton = document.getElementById('auth-submit-button');
+        const toggleAuthModeButton = document.getElementById('toggle-auth-mode');
+        const authErrorMessage = document.getElementById('auth-error-message');
+        const authSuccessMessage = document.getElementById('auth-success-message');
+
+        const profileForm = document.getElementById('profile-form');
+        const profileNameInput = document.getElementById('profile-name');
+        const farmLocationInput = document.getElementById('farm-location');
+        const profileErrorMessage = document.getElementById('profile-error-message');
+        const profileSuccessMessage = document.getElementById('profile-success-message');
+
+        // Header
+        const welcomeMessageSpan = document.getElementById('welcome-message');
+        const logoutButton = document.getElementById('logout-button');
+
+        // Dashboard Tabs
+        const tabGetRecommendationsButton = document.getElementById('tab-get-recommendations');
+        const tabRecommendationHistoryButton = document.getElementById('tab-recommendation-history');
+        const tabDiseaseDetectionButton = document.getElementById('tab-disease-detection');
+        const tabContentGetRecommendations = document.getElementById('tab-content-get-recommendations');
+        const tabContentRecommendationHistory = document.getElementById('tab-content-recommendation-history');
+        const tabContentDiseaseDetection = document.getElementById('tab-content-disease-detection');
+
+        // Get New Recommendations
+        const cropTypeSelect = document.getElementById('crop-type');
+        const soilMoistureSelect = document.getElementById('soil-moisture');
+        const temperatureInput = document.getElementById('temperature');
+        const humidityInput = document.getElementById('humidity');
+        const weatherForecastSelect = document.getElementById('weather-forecast');
+        const pestDiseaseSelect = document.getElementById('pest-disease');
+        const generateRecommendationsButton = document.getElementById('generate-recommendations-button');
+        const aiLoadingSpinner = document.getElementById('ai-loading-spinner');
+        const aiErrorDisplay = document.getElementById('ai-error-display');
+        const aiResponseDisplay = document.getElementById('ai-response-display');
+        const aiPlaceholderMessage = document.getElementById('ai-placeholder-message');
+        const aiTimestamp = document.getElementById('ai-timestamp');
+
+        // History
+        const recommendationHistoryList = document.getElementById('recommendation-history-list');
+        const historyLoading = document.getElementById('history-loading');
+        const historyEmptyState = document.getElementById('history-empty-state');
+
+        // Disease Detection
+        const useCameraButton = document.getElementById('use-camera-button');
+        const uploadFromFilesButton = document.getElementById('upload-from-files-button');
+        const imageUploadInput = document.getElementById('image-upload');
+        const uploadArea = document.getElementById('upload-area');
+        const cameraPreview = document.getElementById('camera-preview');
+        const cameraPlaceholder = document.getElementById('camera-placeholder');
+        const videoStream = document.getElementById('video-stream');
+        const captureButton = document.getElementById('capture-button');
+        const stopCameraButton = document.getElementById('stop-camera-button');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const clearImageButton = document.getElementById('clear-image-button');
+        const diseaseCropTypeSelect = document.getElementById('disease-crop-type');
+        const analyzeDiseaseButton = document.getElementById('analyze-disease-button');
+        const diseaseLoadingSpinner = document.getElementById('disease-loading-spinner');
+        const diseaseErrorDisplay = document.getElementById('disease-error-display');
+        const diseaseResponseDisplay = document.getElementById('disease-response-display');
+        const diseasePlaceholderMessage = document.getElementById('disease-placeholder-message');
+        const diseaseTimestamp = document.getElementById('disease-timestamp');
+        const diseaseHistorySection = document.getElementById('disease-history-section');
+        const diseaseHistoryList = document.getElementById('disease-history-list');
+
+        // Camera & Image State
+        let currentImageData = null; // Base64 or Blob
+        let cameraStream = null;
+
+        // Alert
+        const customAlertModal = document.getElementById('custom-alert-modal');
+        const customAlertMessage = document.getElementById('custom-alert-message');
+        const customAlertCloseButton = document.getElementById('custom-alert-close');
+        
+        // Background Slider
+        const bgSlider = document.getElementById('bg-slider');
+
+        // --- Core Logic ---
+
+        async function initApp() {
+            startBackgroundSlider(); // Start the background animation
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Authentication Flow: Custom Token -> Anonymous -> Auth State Listener
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    // Only sign in anonymously if we aren't already signed in or persisting a session
+                    // Note: onAuthStateChanged will fire with null first if not signed in, then we can trigger anon logic if needed
+                    // But typically signInAnonymously persists.
+                    // For this environment, we'll try to sign in anonymously if no user exists
+                     // Check if there is a currentUser directly first might be race condition, better to wait for auth state
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                         handleUserAuthenticated(user);
+                    } else {
+                        // If no user, default to anonymous sign in for "guest" access or show auth page
+                        // For this app, we force Auth page if not logged in.
+                        currentUser = null;
+                        currentUserProfile = null;
+                        navigateToPage('auth');
+                    }
+                });
+
+            } catch (error) {
+                console.error("Initialization Error:", error);
+                loadingSpinner.classList.add('hidden');
+                loadingMessage.textContent = "Error initializing application.";
+                loadingErrorDetail.classList.remove('hidden');
+                loadingErrorDetail.textContent = error.message;
+            }
+        }
+        
+        function startBackgroundSlider() {
+            const images = [
+                'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2532&auto=format&fit=crop', // Original green hills
+                'https://images.unsplash.com/photo-1625246333195-f81961856126?q=80&w=2670&auto=format&fit=crop', // Wheat field
+                'https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?q=80&w=2670&auto=format&fit=crop', // Corn field
+                'https://images.unsplash.com/photo-1595837311145-21d4d8021c1f?q=80&w=2670&auto=format&fit=crop'  // Sunrise farm
+            ];
+            
+            // Create divs for each image
+            images.forEach((url, index) => {
+                const div = document.createElement('div');
+                div.style.backgroundImage = `url(${url})`;
+                div.className = `absolute inset-0 bg-cover bg-center bg-slide ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
+                bgSlider.appendChild(div);
+            });
+            
+            let currentIndex = 0;
+            
+            // Cycle every 5 seconds
+            setInterval(() => {
+                const divs = bgSlider.children;
+                divs[currentIndex].classList.remove('opacity-100');
+                divs[currentIndex].classList.add('opacity-0');
+                
+                currentIndex = (currentIndex + 1) % divs.length;
+                
+                divs[currentIndex].classList.remove('opacity-0');
+                divs[currentIndex].classList.add('opacity-100');
+            }, 6000);
+        }
+
+        async function handleUserAuthenticated(user) {
+            currentUser = user;
+            
+            // Check for profile
+            const userProfileRef = doc(db, `artifacts/${appId}/users/${currentUser.uid}/profiles`, currentUser.uid);
+            try {
+                const userProfileSnap = await getDoc(userProfileRef);
+                if (userProfileSnap.exists()) {
+                    currentUserProfile = userProfileSnap.data();
+                    navigateToPage('farmerDashboard');
+                } else {
+                    // User exists but profile doesn't (could be new email signup)
+                    navigateToPage('registerProfile');
+                }
+            } catch (err) {
+                console.error("Profile Fetch Error:", err);
+                // Fallback to profile creation if fetch fails (permission issue or missing doc)
+                navigateToPage('registerProfile');
+            }
+            updateHeaderUI();
+        }
+
+        // --- Gemini AI Integration ---
+
+        async function callGeminiWithRetry(prompt) {
+             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+             const payload = {
+                contents: [{ parts: [{ text: prompt }] }]
+             };
+
+             const delays = [1000, 2000, 4000]; // Simple backoff strategy
+
+             for (let i = 0; i <= delays.length; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    if (i === delays.length) throw error; // Rethrow on last attempt
+                    await new Promise(r => setTimeout(r, delays[i]));
+                }
+             }
+        }
+
+        async function handleGenerateRecommendations() {
+            // 1. Validation
+            if (!apiKey) {
+                showAlert("API Key is missing. Cannot contact AI.");
+                return;
+            }
+
+            // 2. Gather Inputs
+            const inputs = {
+                crop: cropTypeSelect.value,
+                moisture: soilMoistureSelect.value,
+                temp: temperatureInput.value,
+                humidity: humidityInput.value,
+                weather: weatherForecastSelect.value,
+                pests: pestDiseaseSelect.value,
+                location: currentUserProfile ? currentUserProfile.farmLocation : "Unknown"
+            };
+
+            // 3. UI Loading State
+            generateRecommendationsButton.disabled = true;
+            generateRecommendationsButton.classList.add('opacity-50', 'cursor-not-allowed');
+            aiLoadingSpinner.classList.remove('hidden');
+            aiResponseDisplay.classList.add('hidden');
+            aiPlaceholderMessage.classList.add('hidden');
+            aiErrorDisplay.classList.add('hidden');
+            aiTimestamp.textContent = '';
+
+            // 4. Construct Prompt
+            const prompt = `
+                Act as an expert agronomist for a farm in ${inputs.location}.
+                Provide a concise but detailed advisory report based on these conditions:
+                - Crop: ${inputs.crop}
+                - Soil Moisture: ${inputs.moisture}
+                - Temperature: ${inputs.temp}°C
+                - Humidity: ${inputs.humidity}%
+                - Weather Forecast (Next 7 days): ${inputs.weather}
+                - Pest/Disease Status: ${inputs.pests}
+
+                Structure your response with these exact headings:
+                1. 💧 Irrigation Advice
+                2. 🛡️ Pest & Disease Management
+                3. 🧪 Fertilizer & Nutrient Recommendations
+                4. ⚠️ Immediate Alerts (if any)
+                
+                Keep the tone professional yet encouraging.
+            `;
+
+            try {
+                // 5. API Call
+                const data = await callGeminiWithRetry(prompt);
+                
+                if (!data.candidates || !data.candidates[0].content) {
+                    throw new Error("Invalid response from AI service.");
+                }
+                
+                const aiText = data.candidates[0].content.parts[0].text;
+
+                // 6. Display Result
+                aiResponseDisplay.textContent = aiText;
+                aiResponseDisplay.classList.remove('hidden');
+                aiTimestamp.textContent = new Date().toLocaleString();
+
+                // 7. Save to Firestore (Fire and Forget pattern for UI speed, but await for safety)
+                if (currentUser) {
+                    const recommendationData = {
+                        ...inputs,
+                        recommendation: aiText,
+                        createdAt: serverTimestamp(),
+                        generatedAt: new Date().toISOString() // Fallback for simple sorting
+                    };
+                    
+                    await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'recommendations'), recommendationData);
+                    // Refresh history if strictly needed, but the onSnapshot listener handles it automatically
+                }
+
+            } catch (error) {
+                console.error("AI Generation Error:", error);
+                aiErrorDisplay.textContent = "Failed to generate recommendations. Please try again.\nError: " + error.message;
+                aiErrorDisplay.classList.remove('hidden');
+            } finally {
+                // 8. Cleanup UI
+                generateRecommendationsButton.disabled = false;
+                generateRecommendationsButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                aiLoadingSpinner.classList.add('hidden');
+            }
+        }
+
+        // --- Disease Detection Logic ---
+
+        async function startCamera() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+                });
+                videoStream.srcObject = cameraStream;
+                cameraPreview.classList.remove('hidden');
+                cameraPlaceholder.classList.add('hidden');
+                useCameraButton.classList.add('hidden');
+                uploadFromFilesButton.classList.add('hidden');
+            } catch (error) {
+                console.error("Camera Error:", error);
+                showAlert("Unable to access camera. Please check permissions.\n" + error.message);
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            cameraPreview.classList.add('hidden');
+            cameraPlaceholder.classList.remove('hidden');
+            useCameraButton.classList.remove('hidden');
+            uploadFromFilesButton.classList.remove('hidden');
+        }
+
+        function capturePhoto() {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoStream.videoWidth;
+            canvas.height = videoStream.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoStream, 0, 0);
+            
+            currentImageData = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Display preview
+            imagePreview.src = currentImageData;
+            imagePreviewContainer.classList.remove('hidden');
+            analyzeDiseaseButton.disabled = false;
+            
+            stopCamera();
+        }
+
+        function clearImage() {
+            currentImageData = null;
+            imagePreviewContainer.classList.add('hidden');
+            analyzeDiseaseButton.disabled = true;
+        }
+
+        async function handleImageUpload(file) {
+            if (!file.type.startsWith('image/')) {
+                showAlert("Please upload an image file.");
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showAlert("Image size must be less than 10MB.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentImageData = e.target.result;
+                imagePreview.src = currentImageData;
+                imagePreviewContainer.classList.remove('hidden');
+                analyzeDiseaseButton.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function analyzeDiseaseImage() {
+            if (!currentImageData) {
+                showAlert("Please upload or capture an image first.");
+                return;
+            }
+
+            if (!apiKey) {
+                showAlert("API Key is missing. Cannot contact AI.");
+                return;
+            }
+
+            // UI Loading State
+            analyzeDiseaseButton.disabled = true;
+            analyzeDiseaseButton.classList.add('opacity-50', 'cursor-not-allowed');
+            diseaseLoadingSpinner.classList.remove('hidden');
+            diseaseResponseDisplay.classList.add('hidden');
+            diseasePlaceholderMessage.classList.add('hidden');
+            diseaseErrorDisplay.classList.add('hidden');
+            diseaseTimestamp.textContent = '';
+
+            const cropType = diseaseCropTypeSelect.value;
+
+            try {
+                // Extract base64 data from data URL
+                let base64Data = currentImageData;
+                if (currentImageData.startsWith('data:')) {
+                    base64Data = currentImageData.split(',')[1];
+                }
+
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [
+                            {
+                                inline_data: {
+                                    mime_type: "image/jpeg",
+                                    data: base64Data
+                                }
+                            },
+                            {
+                                text: `You are an expert agricultural pathologist. Analyze this image of a ${cropType} crop for diseases, pests, and health issues.
+
+Provide a detailed analysis in this format:
+
+🦠 DISEASE STATUS:
+- Primary Issue: [If any disease detected]
+- Confidence Level: [High/Medium/Low]
+- Severity: [None/Mild/Moderate/Severe]
+
+📋 SYMPTOMS IDENTIFIED:
+[List specific symptoms observed]
+
+🔍 DETAILED ANALYSIS:
+[Explain what you see and why it indicates the identified condition]
+
+💊 RECOMMENDED TREATMENT:
+[Specific fungicides, pesticides, or organic solutions]
+
+⚠️ IMMEDIATE ACTIONS:
+[What the farmer should do right now]
+
+📅 PREVENTION TIPS:
+[How to prevent this issue in the future]
+
+⚡ URGENCY LEVEL: [Low/Medium/High]
+
+If the crop appears healthy, state that clearly and provide general care recommendations.`
+                            }
+                        ]
+                    }]
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                const data = await response.json();
+
+                if (!data.candidates || !data.candidates[0].content) {
+                    throw new Error("Invalid response from AI service.");
+                }
+
+                const analysisText = data.candidates[0].content.parts[0].text;
+
+                // Display Result
+                diseaseResponseDisplay.textContent = analysisText;
+                diseaseResponseDisplay.classList.remove('hidden');
+                diseaseTimestamp.textContent = new Date().toLocaleString();
+
+                // Save to Firestore
+                if (currentUser) {
+                    const analysisData = {
+                        crop: cropType,
+                        analysis: analysisText,
+                        imageSize: currentImageData.length,
+                        createdAt: serverTimestamp(),
+                        generatedAt: new Date().toISOString()
+                    };
+
+                    await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'disease_analyses'), analysisData);
+                    loadDiseaseHistory();
+                }
+
+            } catch (error) {
+                console.error("Disease Analysis Error:", error);
+                diseaseErrorDisplay.textContent = "Failed to analyze image. Please try again.\nError: " + error.message;
+                diseaseErrorDisplay.classList.remove('hidden');
+            } finally {
+                analyzeDiseaseButton.disabled = false;
+                analyzeDiseaseButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                diseaseLoadingSpinner.classList.add('hidden');
+            }
+        }
+
+        function loadDiseaseHistory() {
+            if (!currentUser) return;
+
+            const q = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'disease_analyses');
+
+            onSnapshot(q, (snapshot) => {
+                const docs = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                docs.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.seconds : 0;
+                    const dateB = b.createdAt ? b.createdAt.seconds : 0;
+                    return dateB - dateA;
+                });
+
+                diseaseHistoryList.innerHTML = '';
+
+                if (docs.length > 0) {
+                    diseaseHistorySection.classList.remove('hidden');
+                    docs.slice(0, 5).forEach(item => {
+                        const dateStr = item.createdAt ? new Date(item.createdAt.seconds * 1000).toLocaleDateString() : 'Just now';
+                        const el = document.createElement('div');
+                        el.className = "text-xs bg-white/50 p-2 rounded border border-gray-200 hover:bg-white/70 cursor-pointer transition";
+                        el.innerHTML = `<span class="font-semibold text-emerald-700">${item.crop}</span> - ${dateStr}`;
+                        el.onclick = () => {
+                            diseaseResponseDisplay.textContent = item.analysis;
+                            diseaseResponseDisplay.classList.remove('hidden');
+                            diseasePlaceholderMessage.classList.add('hidden');
+                            diseaseTimestamp.textContent = "Historical: " + dateStr;
+                            imagePreview.src = '';
+                            imagePreviewContainer.classList.add('hidden');
+                            currentImageData = null;
+                            analyzeDiseaseButton.disabled = true;
+                        };
+                        diseaseHistoryList.appendChild(el);
+                    });
+                } else {
+                    diseaseHistorySection.classList.add('hidden');
+                }
+            }, (error) => {
+                console.error("Disease History Error:", error);
+            });
+        }
+
+        // --- History Logic ---
+
+        function loadRecommendationHistory() {
+            if (!currentUser) return;
+            
+            // Clean up existing listener
+            if (unsubscribeHistory) unsubscribeHistory();
+
+            historyLoading.classList.remove('hidden');
+            recommendationHistoryList.innerHTML = '';
+            historyEmptyState.classList.add('hidden');
+
+            const q = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'recommendations');
+
+            // RULE COMPLIANCE: No orderBy() in query. Sort in memory.
+            unsubscribeHistory = onSnapshot(q, (snapshot) => {
+                historyLoading.classList.add('hidden');
+                
+                const docs = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                // Sort Descending by createdAt
+                docs.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.seconds : 0;
+                    const dateB = b.createdAt ? b.createdAt.seconds : 0;
+                    return dateB - dateA;
+                });
+
+                if (docs.length === 0) {
+                    historyEmptyState.classList.remove('hidden');
+                    return;
+                }
+
+                historyEmptyState.classList.add('hidden');
+                recommendationHistoryList.innerHTML = ''; // Clear list
+
+                docs.forEach(item => {
+                    const dateStr = item.createdAt ? new Date(item.createdAt.seconds * 1000).toLocaleDateString() : 'Just now';
+                    const snippet = item.recommendation ? item.recommendation.substring(0, 150) + '...' : 'No content';
+                    
+                    const el = document.createElement('div');
+                    el.className = "bg-white/80 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer backdrop-blur-sm";
+                    el.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-emerald-800">${item.crop} Report</h4>
+                            <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded border">${dateStr}</span>
+                        </div>
+                        <div class="text-xs text-gray-600 mb-2 flex gap-2 flex-wrap">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">${item.weather}</span>
+                            <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full">${item.pests}</span>
+                        </div>
+                        <p class="text-sm text-gray-700">${snippet}</p>
+                    `;
+                    // Click to view full details (simple alert implementation for now, or populate main view)
+                    el.onclick = () => {
+                         // Switch tab and populate main view
+                         switchTab('getRecommendations');
+                         aiResponseDisplay.textContent = item.recommendation;
+                         aiResponseDisplay.classList.remove('hidden');
+                         aiPlaceholderMessage.classList.add('hidden');
+                         aiTimestamp.textContent = "Historical View: " + dateStr;
+                         
+                         // Fill inputs (read-only visual cue)
+                         cropTypeSelect.value = item.crop;
+                         soilMoistureSelect.value = item.moisture;
+                         temperatureInput.value = item.temp;
+                         humidityInput.value = item.humidity;
+                         weatherForecastSelect.value = item.weather;
+                         pestDiseaseSelect.value = item.pests;
+                    };
+                    recommendationHistoryList.appendChild(el);
+                });
+
+            }, (error) => {
+                console.error("History Listener Error:", error);
+                historyLoading.classList.add('hidden');
+                recommendationHistoryList.innerHTML = `<p class="text-red-500 text-center">Failed to load history.</p>`;
+            });
+        }
+
+
+        // --- UI Navigation ---
+
+        function switchTab(tabName) {
+            currentDashboardTab = tabName;
+            
+            // Reset styles
+            tabGetRecommendationsButton.classList.remove('text-emerald-600', 'border-b-2', 'border-emerald-600');
+            tabRecommendationHistoryButton.classList.remove('text-emerald-600', 'border-b-2', 'border-emerald-600');
+            tabDiseaseDetectionButton.classList.remove('text-emerald-600', 'border-b-2', 'border-emerald-600');
+            tabGetRecommendationsButton.classList.add('text-gray-600');
+            tabRecommendationHistoryButton.classList.add('text-gray-600');
+            tabDiseaseDetectionButton.classList.add('text-gray-600');
+            
+            tabContentGetRecommendations.classList.add('hidden');
+            tabContentRecommendationHistory.classList.add('hidden');
+            tabContentDiseaseDetection.classList.add('hidden');
+
+            if (tabName === 'getRecommendations') {
+                tabGetRecommendationsButton.classList.add('text-emerald-600', 'border-b-2', 'border-emerald-600');
+                tabGetRecommendationsButton.classList.remove('text-gray-600');
+                tabContentGetRecommendations.classList.remove('hidden');
+            } else if (tabName === 'recommendationHistory') {
+                tabRecommendationHistoryButton.classList.add('text-emerald-600', 'border-b-2', 'border-emerald-600');
+                tabRecommendationHistoryButton.classList.remove('text-gray-600');
+                tabContentRecommendationHistory.classList.remove('hidden');
+                loadRecommendationHistory();
+            } else if (tabName === 'diseaseDetection') {
+                tabDiseaseDetectionButton.classList.add('text-emerald-600', 'border-b-2', 'border-emerald-600');
+                tabDiseaseDetectionButton.classList.remove('text-gray-600');
+                tabContentDiseaseDetection.classList.remove('hidden');
+                loadDiseaseHistory();
+            }
+        }
+
+        function navigateToPage(page) {
+            loadingScreen.classList.add('hidden');
+            authPage.classList.add('hidden');
+            profileSetupPage.classList.add('hidden');
+            farmerDashboard.classList.add('hidden');
+
+            switch (page) {
+                case 'auth':
+                    authPage.classList.remove('hidden');
+                    break;
+                case 'registerProfile':
+                    profileSetupPage.classList.remove('hidden');
+                    break;
+                case 'farmerDashboard':
+                    farmerDashboard.classList.remove('hidden');
+                    switchTab('getRecommendations'); // Default tab
+                    break;
+            }
+        }
+
+        function updateHeaderUI() {
+            if (currentUserProfile) {
+                welcomeMessageSpan.textContent = `👋 ${currentUserProfile.name} | ${currentUserProfile.farmLocation}`;
+                welcomeMessageSpan.classList.remove('hidden');
+                logoutButton.classList.remove('hidden');
+            } else {
+                welcomeMessageSpan.classList.add('hidden');
+                logoutButton.classList.add('hidden');
+            }
+        }
+
+        function showAlert(message) {
+            customAlertMessage.textContent = message;
+            customAlertModal.classList.remove('hidden');
+        }
+
+        // --- Event Listeners ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+
+            // Auth Forms
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = authEmailInput.value;
+                const password = authPasswordInput.value;
+                const isLogin = authSubmitButton.textContent === 'Login';
+                
+                authErrorMessage.classList.add('hidden');
+                authSuccessMessage.classList.add('hidden');
+
+                try {
+                    if (isLogin) {
+                        await signInWithEmailAndPassword(auth, email, password);
+                    } else {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        authSuccessMessage.textContent = "Account created! Redirecting...";
+                        authSuccessMessage.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    authErrorMessage.textContent = error.message;
+                    authErrorMessage.classList.remove('hidden');
+                }
+            });
+
+            toggleAuthModeButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                const isLogin = authSubmitButton.textContent === 'Login';
+                authTitle.textContent = isLogin ? 'Sign Up for AgroSense' : 'Login to AgroSense';
+                authSubmitButton.textContent = isLogin ? 'Sign Up' : 'Login';
+                toggleAuthModeButton.textContent = isLogin ? 'Login' : 'Sign Up';
+                authErrorMessage.classList.add('hidden');
+            });
+
+            // Profile Form
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!currentUser) return;
+                
+                const profileData = {
+                    name: profileNameInput.value,
+                    farmLocation: farmLocationInput.value,
+                    email: currentUser.email,
+                    uid: currentUser.uid,
+                    createdAt: serverTimestamp()
+                };
+
+                try {
+                    await setDoc(doc(db, `artifacts/${appId}/users/${currentUser.uid}/profiles`, currentUser.uid), profileData);
+                    currentUserProfile = profileData;
+                    navigateToPage('farmerDashboard');
+                } catch (error) {
+                    profileErrorMessage.textContent = error.message;
+                    profileErrorMessage.classList.remove('hidden');
+                }
+            });
+
+            // Dashboard
+            logoutButton.addEventListener('click', () => signOut(auth));
+            
+            tabGetRecommendationsButton.addEventListener('click', () => switchTab('getRecommendations'));
+            tabRecommendationHistoryButton.addEventListener('click', () => switchTab('recommendationHistory'));
+            tabDiseaseDetectionButton.addEventListener('click', () => switchTab('diseaseDetection'));
+
+            generateRecommendationsButton.addEventListener('click', handleGenerateRecommendations);
+
+            // Disease Detection Event Listeners
+            useCameraButton.addEventListener('click', startCamera);
+            stopCameraButton.addEventListener('click', stopCamera);
+            captureButton.addEventListener('click', capturePhoto);
+            clearImageButton.addEventListener('click', clearImage);
+            uploadFromFilesButton.addEventListener('click', () => imageUploadInput.click());
+            analyzeDiseaseButton.addEventListener('click', analyzeDiseaseImage);
+
+            imageUploadInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleImageUpload(e.target.files[0]);
+                }
+            });
+
+            // Drag and drop for image upload
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('bg-blue-100/50');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('bg-blue-100/50');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('bg-blue-100/50');
+                if (e.dataTransfer.files.length > 0) {
+                    handleImageUpload(e.dataTransfer.files[0]);
+                }
+            });
+
+            customAlertCloseButton.addEventListener('click', () => {
+                customAlertModal.classList.add('hidden');
+            });
+        });
+
+    </script>
+</body>
+</html>

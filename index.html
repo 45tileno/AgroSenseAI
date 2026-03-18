@@ -4,22 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgroSense AI: Smart Farm Assistant</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style type="text/tailwindcss">
-        /* Custom Tailwind Configuration for font and animations */
-        @layer base {
-            body {
-                font-family: 'Inter', sans-serif;
-            }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
+    <!-- Built Tailwind CSS -->
+    <link rel="stylesheet" href="dist/output.css">
+        <link rel="icon" href="AgroSence Logo.png" type="image/jpeg">
+    <style>
+        /* Minimal custom styles moved to built CSS where possible. Keep extra utilities here. */
         /* Custom scrollbar for text areas */
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
@@ -34,7 +23,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #059669;
         }
-        
         /* Glassmorphism Utilities */
         .glass-panel {
             background-color: rgba(255, 255, 255, 0.92);
@@ -53,6 +41,8 @@
     </style>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="font-inter min-h-screen flex flex-col bg-gray-900">
     
@@ -102,6 +92,14 @@
                         <label class="block text-gray-700 text-sm font-semibold mb-2" for="auth-email">Email Address:</label>
                         <input type="email" id="auth-email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80" required>
                     </div>
+                    <div id="auth-username-container" class="hidden">
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="auth-username">Username (optional):</label>
+                        <input type="text" id="auth-username" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80">
+                    </div>
+                    <div id="auth-phone-container" class="hidden">
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="auth-phone">Phone Number (optional):</label>
+                        <input type="tel" id="auth-phone" placeholder="+2547XXXXXXXX" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80">
+                    </div>
                     <div>
                         <label class="block text-gray-700 text-sm font-semibold mb-2" for="auth-password">Password:</label>
                         <input type="password" id="auth-password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80" required>
@@ -110,6 +108,34 @@
                 </form>
                 <p class="mt-6 text-center text-gray-600 text-sm">
                     Don't have an account? <button id="toggle-auth-mode" class="text-emerald-600 hover:text-emerald-800 font-semibold transition duration-200">Sign Up</button>
+                </p>
+            </div>
+        </section>
+
+        <!-- Login Page -->
+        <section id="login-page" class="hidden flex justify-center items-center py-10">
+            <div class="glass-panel p-8 rounded-xl shadow-2xl w-full max-w-md border border-white/50">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Welcome Back</h2>
+                <p class="text-center text-gray-600 text-sm mb-6">Sign in with your credentials</p>
+                <div id="login-error-message" class="bg-red-100 text-red-700 p-3 rounded-md mb-4 text-sm hidden"></div>
+                <div id="login-success-message" class="bg-green-100 text-green-700 p-3 rounded-md mb-4 text-sm hidden"></div>
+                <form id="login-form" class="space-y-5">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="login-email">Email Address:</label>
+                        <input type="email" id="login-email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80" placeholder="you@example.com" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="login-phone">Phone Number:</label>
+                        <input type="tel" id="login-phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80" placeholder="+254712345678" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="login-password">Password:</label>
+                        <input type="password" id="login-password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 bg-white/80" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" id="login-submit-button" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">Sign In</button>
+                </form>
+                <p class="mt-6 text-center text-gray-600 text-sm">
+                    Don't have an account? <button type="button" id="go-to-signup-button" class="text-emerald-600 hover:text-emerald-800 font-semibold transition duration-200">Create Account</button>
                 </p>
             </div>
         </section>
@@ -139,6 +165,69 @@
             <div class="p-6 md:p-8">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Farm Dashboard</h2>
 
+                <!-- Dashboard Stats Cards -->
+                <div id="dashboard-stats" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-4 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Total Reports</p>
+                                <p id="stat-reports-count" class="text-3xl font-bold text-emerald-700">0</p>
+                            </div>
+                            <span class="text-4xl">📋</span>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Disease Scans</p>
+                                <p id="stat-disease-count" class="text-3xl font-bold text-blue-700">0</p>
+                            </div>
+                            <span class="text-4xl">🦠</span>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Active Reminders</p>
+                                <p id="stat-reminders-count" class="text-3xl font-bold text-purple-700">0</p>
+                            </div>
+                            <span class="text-4xl">🔔</span>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Farm Health</p>
+                                <p id="stat-health-score" class="text-3xl font-bold text-orange-700">Good</p>
+                            </div>
+                            <span class="text-4xl">🌾</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Chat Assistant -->
+                <div id="tab-content-chat-assistant" class="hidden">
+                    <div class="glass-panel p-6 rounded-lg shadow-lg border border-white/50">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center"><span class="mr-2">💬</span> Chat Assistant</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-2">
+                                <div id="chat-history" class="h-80 overflow-auto p-4 bg-white/60 rounded border border-gray-200 mb-4" style="white-space:pre-wrap"></div>
+                                <div class="flex gap-2">
+                                    <input id="chat-input" type="text" placeholder="Ask a farming question (e.g., best fertilizer for maize)" class="flex-1 px-4 py-2 rounded border border-gray-300 focus:outline-none" />
+                                    <button id="chat-send-button" class="px-4 py-2 bg-emerald-600 text-white rounded">Send</button>
+                                </div>
+                                <p id="chat-error" class="text-red-500 text-sm mt-2 hidden"></p>
+                            </div>
+                            <div class="md:col-span-1">
+                                <h4 class="font-semibold mb-2">Quick Questions</h4>
+                                <div id="chat-suggestions" class="space-y-2 text-sm">
+                                    <!-- suggestions injected here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Navigation Tabs -->
                 <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
                     <button id="tab-get-recommendations" class="px-6 py-3 text-lg font-semibold transition-colors duration-300 ease-in-out text-emerald-600 border-b-2 border-emerald-600 whitespace-nowrap">
@@ -149,6 +238,16 @@
                     </button>
                     <button id="tab-disease-detection" class="ml-4 px-6 py-3 text-lg font-semibold transition-colors duration-300 ease-in-out text-gray-600 hover:text-gray-800 whitespace-nowrap">
                         🦠 Disease Detection
+                    </button>
+                    <button id="tab-reminders" class="ml-4 px-6 py-3 text-lg font-semibold transition-colors duration-300 ease-in-out text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        🔔 Reminders
+                    </button>
+                    <button id="tab-crop-guide" class="ml-4 px-6 py-3 text-lg font-semibold transition-colors duration-300 ease-in-out text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        🎓 Crop Guide
+                    </button>
+                    <button id="tab-chat-assistant" class="ml-4 px-6 py-3 text-lg font-semibold transition-colors duration-300 ease-in-out text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        💬 Chat Assistant
+                    </button>
                     </button>
                 </div>
 
@@ -228,10 +327,17 @@
                         <!-- AI Generated Recommendations Display -->
                         <div class="flex flex-col h-full">
                             <div class="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-200 flex-grow flex flex-col min-h-[500px]">
-                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center justify-between">
-                                    <span class="flex items-center"><span class="mr-2">🤖</span> AI Recommendations</span>
-                                    <span id="ai-timestamp" class="text-xs text-gray-500 font-normal"></span>
-                                </h3>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                        <span class="mr-2">🤖</span> AI Recommendations
+                                    </h3>
+                                    <div class="flex items-center gap-2">
+                                        <span id="ai-timestamp" class="text-xs text-gray-500 font-normal"></span>
+                                        <button id="download-recommendations-button" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1 px-3 rounded-md text-sm transition duration-300 flex items-center gap-1" title="Download as PDF">
+                                            📥 PDF
+                                        </button>
+                                    </div>
+                                </div>
                                 
                                 <div id="ai-loading-spinner" class="flex flex-col items-center justify-center h-64 hidden flex-grow">
                                     <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-emerald-600"></div>
@@ -363,10 +469,17 @@
                         <!-- Analysis Results Display -->
                         <div class="flex flex-col h-full">
                             <div class="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-200 flex-grow flex flex-col min-h-[500px]">
-                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center justify-between">
-                                    <span class="flex items-center"><span class="mr-2">🤖</span> Analysis Results</span>
-                                    <span id="disease-timestamp" class="text-xs text-gray-500 font-normal"></span>
-                                </h3>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                        <span class="mr-2">🤖</span> Analysis Results
+                                    </h3>
+                                    <div class="flex items-center gap-2">
+                                        <span id="disease-timestamp" class="text-xs text-gray-500 font-normal"></span>
+                                        <button id="download-disease-button" class="hidden bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md text-sm transition duration-300 flex items-center gap-1" title="Download as PDF">
+                                            📥 PDF
+                                        </button>
+                                    </div>
+                                </div>
                                 
                                 <div id="disease-loading-spinner" class="flex flex-col items-center justify-center h-64 hidden flex-grow">
                                     <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-600"></div>
@@ -395,6 +508,84 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Tab Content: Reminders -->
+                <div id="tab-content-reminders" class="hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Add Reminder Form -->
+                        <div class="glass-panel-dark p-6 rounded-lg shadow-inner border border-emerald-100/50 h-fit">
+                            <h3 class="text-xl font-bold text-emerald-800 mb-4 flex items-center">
+                                <span class="mr-2">➕</span> Create New Reminder
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-semibold mb-2">Reminder Type:</label>
+                                    <select id="reminder-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90">
+                                        <option>💧 Watering</option>
+                                        <option>🧪 Fertilizing</option>
+                                        <option>🦠 Pest Control</option>
+                                        <option>🌾 Harvesting</option>
+                                        <option>🌱 Planting</option>
+                                        <option>✂️ Pruning</option>
+                                        <option>📊 Soil Test</option>
+                                        <option>🔍 Health Check</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-semibold mb-2">Reminder Text:</label>
+                                    <input type="text" id="reminder-text" placeholder="e.g., Water the maize field" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90" required>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-semibold mb-2">Date & Time:</label>
+                                    <input type="datetime-local" id="reminder-datetime" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white/90" required>
+                                </div>
+                                <button id="add-reminder-button" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                                    🔔 Add Reminder
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Active Reminders List -->
+                        <div class="glass-panel p-6 rounded-lg shadow-inner border border-emerald-100/50">
+                            <h3 class="text-xl font-bold text-emerald-800 mb-4 flex items-center">
+                                <span class="mr-2">📋</span> Your Reminders
+                            </h3>
+                            <div id="reminders-list" class="space-y-3">
+                                <!-- Reminders injected here -->
+                            </div>
+                            <div class="flex gap-2 mt-4">
+                                <button id="export-reminders-button" class="px-3 py-2 bg-blue-600 text-white rounded">Export Reminders</button>
+                                <button id="clear-reminders-button" class="px-3 py-2 bg-red-600 text-white rounded">Clear Reminders</button>
+                            </div>
+                            <div id="reminders-empty-state" class="text-center py-8 text-gray-400">
+                                <p>No reminders set. Create one to stay on track! 🚀</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Crop Guide -->
+                <div id="tab-content-crop-guide" class="hidden">
+                    <div class="glass-panel p-6 rounded-lg shadow-lg border border-white/50">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <span class="mr-2">🎓</span> Crop Growing Guide
+                        </h3>
+                        <div id="crop-guide-content" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Crop guides injected here -->
+                        </div>
+                        <div class="mt-6 border-t pt-6">
+                            <h4 class="text-lg font-semibold mb-2">Ask about any crop</h4>
+                            <p class="text-sm text-gray-600 mb-3">Type a crop name or question and get a quick growing guide.</p>
+                            <div class="flex gap-2 mb-3">
+                                <input id="crop-query-input" type="text" placeholder="e.g., Guava care, plant spacing for cassava" class="flex-1 px-4 py-2 rounded border border-gray-300" />
+                                <button id="crop-query-button" class="px-4 py-2 bg-emerald-600 text-white rounded">Ask</button>
+                                <div id="crop-query-spinner" class="hidden px-3 py-2">Loading...</div>
+                            </div>
+                            <div id="crop-query-response" class="bg-white/60 p-4 rounded border border-gray-200 text-sm whitespace-pre-line hidden"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -411,6 +602,9 @@
             <p id="custom-alert-message" class="text-gray-700 mb-6"></p>
             <div class="flex justify-end">
                 <button id="custom-alert-close" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-md transition duration-300 ease-in-out shadow-md">OK</button>
+                <div>
+                    
+                </div>
             </div>
         </div>
     </div>
@@ -418,13 +612,13 @@
     <script type="module">
         // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, setPersistence, browserLocalPersistence, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // --- Configuration & Constants ---
         // Global variables provided by the Canvas environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const apiKey = typeof __api_key !== 'undefined' ? __api_key : 'AIzaSyA7_eadb-3Vsb6A8Y4X9fQYJy1PXsEn1Ck';
+        const apiKey = typeof __api_key !== 'undefined' ? __api_key : 'AIzaSyAxstKPGVShiyWo5q8rXdoUTJqOJgKUYdc';
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         // Configuration Logic
@@ -451,7 +645,9 @@
         let currentUserProfile = null;
         let currentAppPage = 'loading'; 
         let currentDashboardTab = 'getRecommendations'; 
-        let unsubscribeHistory = null; // Listener cleanup function
+        let unsubscribeHistory = null; // Listener cleanup function for recommendations
+        let unsubscribeDiseaseHistory = null; // Listener cleanup function for diseases
+        let unsubscribeReminders = null; // Listener cleanup function for reminders
 
         // --- DOM Elements ---
         const loadingScreen = document.getElementById('loading-screen');
@@ -460,6 +656,15 @@
         const loadingErrorDetail = document.getElementById('loading-error-detail');
 
         const authPage = document.getElementById('auth-page');
+        const loginPage = document.getElementById('login-page');
+        const loginForm = document.getElementById('login-form');
+        const loginEmail = document.getElementById('login-email');
+        const loginPhone = document.getElementById('login-phone');
+        const loginPassword = document.getElementById('login-password');
+        const loginErrorMessage = document.getElementById('login-error-message');
+        const loginSuccessMessage = document.getElementById('login-success-message');
+        const loginSubmitButton = document.getElementById('login-submit-button');
+        const goToSignupButton = document.getElementById('go-to-signup-button');
         const profileSetupPage = document.getElementById('profile-setup-page');
         const farmerDashboard = document.getElementById('farmer-dashboard');
 
@@ -487,9 +692,21 @@
         const tabGetRecommendationsButton = document.getElementById('tab-get-recommendations');
         const tabRecommendationHistoryButton = document.getElementById('tab-recommendation-history');
         const tabDiseaseDetectionButton = document.getElementById('tab-disease-detection');
+        const tabRemindersButton = document.getElementById('tab-reminders');
+        const tabCropGuideButton = document.getElementById('tab-crop-guide');
+        const tabChatAssistantButton = document.getElementById('tab-chat-assistant');
         const tabContentGetRecommendations = document.getElementById('tab-content-get-recommendations');
         const tabContentRecommendationHistory = document.getElementById('tab-content-recommendation-history');
         const tabContentDiseaseDetection = document.getElementById('tab-content-disease-detection');
+        const tabContentReminders = document.getElementById('tab-content-reminders');
+        const tabContentCropGuide = document.getElementById('tab-content-crop-guide');
+        const tabContentChatAssistant = document.getElementById('tab-content-chat-assistant');
+
+        // Crop Guide - custom query elements (added dynamically)
+        const cropQueryInput = document.getElementById('crop-query-input');
+        const cropQueryButton = document.getElementById('crop-query-button');
+        const cropQueryResponse = document.getElementById('crop-query-response');
+        const cropQuerySpinner = document.getElementById('crop-query-spinner');
 
         // Get New Recommendations
         const cropTypeSelect = document.getElementById('crop-type');
@@ -504,11 +721,17 @@
         const aiResponseDisplay = document.getElementById('ai-response-display');
         const aiPlaceholderMessage = document.getElementById('ai-placeholder-message');
         const aiTimestamp = document.getElementById('ai-timestamp');
+        const downloadRecommendationsButton = document.getElementById('download-recommendations-button');
 
         // History
         const recommendationHistoryList = document.getElementById('recommendation-history-list');
         const historyLoading = document.getElementById('history-loading');
         const historyEmptyState = document.getElementById('history-empty-state');
+        const chatHistory = document.getElementById('chat-history');
+        const chatInput = document.getElementById('chat-input');
+        const chatSendButton = document.getElementById('chat-send-button');
+        const chatSuggestions = document.getElementById('chat-suggestions');
+        const chatError = document.getElementById('chat-error');
 
         // Disease Detection
         const useCameraButton = document.getElementById('use-camera-button');
@@ -530,12 +753,73 @@
         const diseaseResponseDisplay = document.getElementById('disease-response-display');
         const diseasePlaceholderMessage = document.getElementById('disease-placeholder-message');
         const diseaseTimestamp = document.getElementById('disease-timestamp');
+        const downloadDiseaseButton = document.getElementById('download-disease-button');
         const diseaseHistorySection = document.getElementById('disease-history-section');
         const diseaseHistoryList = document.getElementById('disease-history-list');
 
         // Camera & Image State
         let currentImageData = null; // Base64 or Blob
         let cameraStream = null;
+
+        // Reminders Storage
+        let reminders = [];
+
+        // Crop Guides Data
+        const cropGuides = {
+            'Maize': {
+                seasons: 'Plant: March-April, Harvest: Aug-Sept',
+                days: '90-120 days to maturity',
+                water: '500-700mm annually',
+                tips: '• Space plants 25cm apart\n• Apply fertilizer at 3-4 weeks\n• Watch for armyworm pests\n• Harvest when kernels are milky',
+                diseases: 'Leaf blight, rust, stem borers'
+            },
+            'Wheat': {
+                seasons: 'Plant: Sept-Oct, Harvest: Feb-March',
+                days: '120-150 days to maturity',
+                water: '400-500mm annually',
+                tips: '• Sow 100-150 kg/ha\n• Apply nitrogen fertilizer\n• Thin seedlings to prevent lodging\n• Harvest when golden brown',
+                diseases: 'Rust, powdery mildew, Septoria'
+            },
+            'Beans': {
+                seasons: 'Plant: Feb-March, Harvest: May-June',
+                days: '60-90 days to maturity',
+                water: '300-400mm annually',
+                tips: '• Inoculate seeds with Rhizobium\n• Plant in well-drained soil\n• Support with stakes if needed\n• Pick pods regularly',
+                diseases: 'Anthracnose, bacterial blight'
+            },
+            'Potatoes': {
+                seasons: 'Plant: March-April, Harvest: July-Aug',
+                days: '90-120 days to maturity',
+                water: '400-500mm annually',
+                tips: '• Cut seed potatoes into 40g pieces\n• Ridge soil after planting\n• Earth up when 15cm high\n• Keep consistently moist',
+                diseases: 'Late blight, early blight, scab'
+            },
+            'Tomato': {
+                seasons: 'Plant: Jan-March, Harvest: April-June',
+                days: '60-85 days to maturity',
+                water: '400-600mm annually',
+                tips: '• Stake or trellis plants\n• Remove lower leaves\n• Consistent watering prevents splitting\n• Harvest at breaker stage',
+                diseases: 'Blight, bacterial wilt, powdery mildew'
+            },
+            'Rice': {
+                seasons: 'Plant: May-June, Harvest: Sept-Oct',
+                days: '100-150 days to maturity',
+                water: '1200-1500mm annually',
+                tips: '• Flood fields after germination\n• Apply nitrogen fertilizer\n• Maintain 5cm water depth\n• Dry before harvest',
+                diseases: 'Blast, brown spot, leaf scald'
+            }
+        };
+
+        // Report Data for PDF Generation
+        let lastRecommendationData = {
+            inputs: null,
+            content: null
+        };
+        let lastDiseaseAnalysisData = {
+            cropType: null,
+            content: null,
+            timestamp: null
+        };
 
         // Alert
         const customAlertModal = document.getElementById('custom-alert-modal');
@@ -554,35 +838,53 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
 
+                // Persist auth state in browser local storage so users remain signed-in after refresh
+                try {
+                    await setPersistence(auth, browserLocalPersistence);
+                } catch (pErr) {
+                    console.warn('Could not set auth persistence:', pErr);
+                }
+
                 // Authentication Flow: Custom Token -> Anonymous -> Auth State Listener
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
                 } else {
-                    // Only sign in anonymously if we aren't already signed in or persisting a session
-                    // Note: onAuthStateChanged will fire with null first if not signed in, then we can trigger anon logic if needed
-                    // But typically signInAnonymously persists.
-                    // For this environment, we'll try to sign in anonymously if no user exists
-                     // Check if there is a currentUser directly first might be race condition, better to wait for auth state
+                    // Try to sign in anonymously for development/testing
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (anonErr) {
+                        console.warn('Anonymous sign-in not available:', anonErr.message);
+                    }
                 }
 
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                         handleUserAuthenticated(user);
-                    } else {
-                        // If no user, default to anonymous sign in for "guest" access or show auth page
-                        // For this app, we force Auth page if not logged in.
-                        currentUser = null;
-                        currentUserProfile = null;
-                        navigateToPage('auth');
-                    }
-                });
+                // remove or comment out initReminders() from DOMContentLoaded
+// and instead call it when user is authenticated:
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    await handleUserAuthenticated(user);
+  } else {
+    // detach listeners and show login page
+    if (unsubscribeReminders) {
+      try { unsubscribeReminders(); } catch (e) { }
+    }
+    navigateToPage('login');
+  }
+});
 
             } catch (error) {
                 console.error("Initialization Error:", error);
                 loadingSpinner.classList.add('hidden');
                 loadingMessage.textContent = "Error initializing application.";
                 loadingErrorDetail.classList.remove('hidden');
-                loadingErrorDetail.textContent = error.message;
+                
+                // Check if it's a Firestore permission error
+                if (error.message && error.message.includes('permission')) {
+                    loadingErrorDetail.textContent = `Firestore Security Rules not configured.\n\nTo fix:\n1. Go to: https://console.firebase.google.com\n2. Select your project: ${firebaseConfig.projectId}\n3. Click Firestore Database\n4. Go to the "Rules" tab\n5. Replace all content with:\n\nrules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    allow read, write: if request.auth != null;\n  }\n}\n\n6. Click "Publish"\n7. Refresh this page`;
+                } else {
+                    loadingErrorDetail.textContent = error.message;
+                }
             }
         }
         
@@ -627,6 +929,12 @@
                 if (userProfileSnap.exists()) {
                     currentUserProfile = userProfileSnap.data();
                     navigateToPage('farmerDashboard');
+                    // Initialize dashboard stats counters
+                    updateReportsCount();
+                    updateDiseaseCount();
+                    // Load reminders from Firestore and start checker
+                    loadReminders();
+                    startReminderChecker();
                 } else {
                     // User exists but profile doesn't (could be new email signup)
                     navigateToPage('registerProfile');
@@ -657,7 +965,19 @@
                         body: JSON.stringify(payload)
                     });
 
-                    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        const errorMessage = errorData.error?.message || `API Error: ${response.status}`;
+                        
+                        if (response.status === 403) {
+                            throw new Error(`❌ API Key Issue (403 Forbidden):\n${errorMessage}\n\nPlease verify your API key at:\nhttps://aistudio.google.com/app/apikey`);
+                        } else if (response.status === 401) {
+                            throw new Error(`❌ Unauthorized (401):\n${errorMessage}\n\nYour API key may be invalid or expired.`);
+                        } else if (response.status === 429) {
+                            throw new Error(`⏱️ Rate Limited (429):\nToo many requests. Please wait a moment and try again.`);
+                        }
+                        throw new Error(`❌ API Error ${response.status}: ${errorMessage}`);
+                    }
                     return await response.json();
                 } catch (error) {
                     if (i === delays.length) throw error; // Rethrow on last attempt
@@ -668,8 +988,13 @@
 
         async function handleGenerateRecommendations() {
             // 1. Validation
-            if (!apiKey) {
-                showAlert("API Key is missing. Cannot contact AI.");
+            if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
+                showAlert("⚠️ API Key not configured!\n\nTo fix this:\n1. Get a free API key from: https://aistudio.google.com/app/apikey\n2. Copy the key\n3. Replace 'YOUR_GEMINI_API_KEY_HERE' with your actual API key in the code\n\nYou must do this before using AI features.");
+                return;
+            }
+
+            if (!apiKey.startsWith('AIza')) {
+                showAlert("❌ Invalid API Key format!\n\nMake sure you've copied the correct API key from Google AI Studio:\nhttps://aistudio.google.com/app/apikey");
                 return;
             }
 
@@ -727,6 +1052,11 @@
                 aiResponseDisplay.textContent = aiText;
                 aiResponseDisplay.classList.remove('hidden');
                 aiTimestamp.textContent = new Date().toLocaleString();
+                
+                // 6b. Store data for PDF generation and show download button
+                lastRecommendationData.inputs = inputs;
+                lastRecommendationData.content = aiText;
+                downloadRecommendationsButton.classList.remove('hidden');
 
                 // 7. Save to Firestore (Fire and Forget pattern for UI speed, but await for safety)
                 if (currentUser) {
@@ -832,8 +1162,13 @@
                 return;
             }
 
-            if (!apiKey) {
-                showAlert("API Key is missing. Cannot contact AI.");
+            if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
+                showAlert("⚠️ API Key not configured!\n\nTo fix this:\n1. Get a free API key from: https://aistudio.google.com/app/apikey\n2. Copy the key\n3. Replace 'YOUR_GEMINI_API_KEY_HERE' with your actual API key in the code\n\nYou must do this before using AI features.");
+                return;
+            }
+
+            if (!apiKey.startsWith('AIza')) {
+                showAlert("❌ Invalid API Key format!\n\nMake sure you've copied the correct API key from Google AI Studio:\nhttps://aistudio.google.com/app/apikey");
                 return;
             }
 
@@ -918,6 +1253,12 @@ If the crop appears healthy, state that clearly and provide general care recomme
                 diseaseResponseDisplay.textContent = analysisText;
                 diseaseResponseDisplay.classList.remove('hidden');
                 diseaseTimestamp.textContent = new Date().toLocaleString();
+                
+                // Store data for PDF generation and show download button
+                lastDiseaseAnalysisData.cropType = cropType;
+                lastDiseaseAnalysisData.content = analysisText;
+                lastDiseaseAnalysisData.timestamp = new Date().toLocaleString();
+                downloadDiseaseButton.classList.remove('hidden');
 
                 // Save to Firestore
                 if (currentUser) {
@@ -945,11 +1286,20 @@ If the crop appears healthy, state that clearly and provide general care recomme
         }
 
         function loadDiseaseHistory() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                console.log("No current user, cannot load disease history");
+                return;
+            }
+
+            // Clean up existing listener
+            if (unsubscribeDiseaseHistory) {
+                unsubscribeDiseaseHistory();
+                unsubscribeDiseaseHistory = null;
+            }
 
             const q = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'disease_analyses');
 
-            onSnapshot(q, (snapshot) => {
+            unsubscribeDiseaseHistory = onSnapshot(q, (snapshot) => {
                 const docs = snapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
@@ -987,16 +1337,23 @@ If the crop appears healthy, state that clearly and provide general care recomme
                 }
             }, (error) => {
                 console.error("Disease History Error:", error);
+                diseaseHistoryList.innerHTML = `<p class="text-red-500 text-xs">Error loading history</p>`;
             });
         }
 
         // --- History Logic ---
 
         function loadRecommendationHistory() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                console.log("No current user, cannot load history");
+                return;
+            }
             
             // Clean up existing listener
-            if (unsubscribeHistory) unsubscribeHistory();
+            if (unsubscribeHistory) {
+                unsubscribeHistory();
+                unsubscribeHistory = null;
+            }
 
             historyLoading.classList.remove('hidden');
             recommendationHistoryList.innerHTML = '';
@@ -1022,6 +1379,7 @@ If the crop appears healthy, state that clearly and provide general care recomme
 
                 if (docs.length === 0) {
                     historyEmptyState.classList.remove('hidden');
+                    recommendationHistoryList.innerHTML = '';
                     return;
                 }
 
@@ -1045,7 +1403,7 @@ If the crop appears healthy, state that clearly and provide general care recomme
                         </div>
                         <p class="text-sm text-gray-700">${snippet}</p>
                     `;
-                    // Click to view full details (simple alert implementation for now, or populate main view)
+                    // Click to view full details
                     el.onclick = () => {
                          // Switch tab and populate main view
                          switchTab('getRecommendations');
@@ -1068,7 +1426,7 @@ If the crop appears healthy, state that clearly and provide general care recomme
             }, (error) => {
                 console.error("History Listener Error:", error);
                 historyLoading.classList.add('hidden');
-                recommendationHistoryList.innerHTML = `<p class="text-red-500 text-center">Failed to load history.</p>`;
+                recommendationHistoryList.innerHTML = `<p class="text-red-500 text-center">Failed to load history: ${error.message}</p>`;
             });
         }
 
@@ -1082,13 +1440,19 @@ If the crop appears healthy, state that clearly and provide general care recomme
             tabGetRecommendationsButton.classList.remove('text-emerald-600', 'border-b-2', 'border-emerald-600');
             tabRecommendationHistoryButton.classList.remove('text-emerald-600', 'border-b-2', 'border-emerald-600');
             tabDiseaseDetectionButton.classList.remove('text-emerald-600', 'border-b-2', 'border-emerald-600');
+            tabRemindersButton.classList.remove('text-emerald-600', 'border-b-2', 'border-emerald-600');
+            tabCropGuideButton.classList.remove('text-emerald-600', 'border-b-2', 'border-emerald-600');
             tabGetRecommendationsButton.classList.add('text-gray-600');
             tabRecommendationHistoryButton.classList.add('text-gray-600');
             tabDiseaseDetectionButton.classList.add('text-gray-600');
+            tabRemindersButton.classList.add('text-gray-600');
+            tabCropGuideButton.classList.add('text-gray-600');
             
             tabContentGetRecommendations.classList.add('hidden');
             tabContentRecommendationHistory.classList.add('hidden');
             tabContentDiseaseDetection.classList.add('hidden');
+            tabContentReminders.classList.add('hidden');
+            tabContentCropGuide.classList.add('hidden');
 
             if (tabName === 'getRecommendations') {
                 tabGetRecommendationsButton.classList.add('text-emerald-600', 'border-b-2', 'border-emerald-600');
@@ -1104,16 +1468,37 @@ If the crop appears healthy, state that clearly and provide general care recomme
                 tabDiseaseDetectionButton.classList.remove('text-gray-600');
                 tabContentDiseaseDetection.classList.remove('hidden');
                 loadDiseaseHistory();
+            } else if (tabName === 'reminders') {
+                tabRemindersButton.classList.add('text-emerald-600', 'border-b-2', 'border-emerald-600');
+                tabRemindersButton.classList.remove('text-gray-600');
+                tabContentReminders.classList.remove('hidden');
+                loadReminders();
+            } else if (tabName === 'cropGuide') {
+                tabCropGuideButton.classList.add('text-emerald-600', 'border-b-2', 'border-emerald-600');
+                tabCropGuideButton.classList.remove('text-gray-600');
+                tabContentCropGuide.classList.remove('hidden');
+                loadCropGuides();
+                initCustomCropQuery();
+            } else if (tabName === 'chatAssistant') {
+                // Chat assistant tab
+                tabChatAssistantButton.classList.add('text-emerald-600', 'border-b-2', 'border-emerald-600');
+                tabChatAssistantButton.classList.remove('text-gray-600');
+                tabContentChatAssistant.classList.remove('hidden');
+                initChatAssistant();
             }
         }
 
         function navigateToPage(page) {
             loadingScreen.classList.add('hidden');
             authPage.classList.add('hidden');
+            loginPage.classList.add('hidden');
             profileSetupPage.classList.add('hidden');
             farmerDashboard.classList.add('hidden');
 
             switch (page) {
+                case 'login':
+                    loginPage.classList.remove('hidden');
+                    break;
                 case 'auth':
                     authPage.classList.remove('hidden');
                     break;
@@ -1143,26 +1528,668 @@ If the crop appears healthy, state that clearly and provide general care recomme
             customAlertModal.classList.remove('hidden');
         }
 
+        // --- PDF Generation Functions ---
+
+        function generateRecommendationPDF() {
+            if (!lastRecommendationData.content || !lastRecommendationData.inputs) {
+                showAlert("No recommendation data available to download.");
+                return;
+            }
+
+            const element = document.createElement('div');
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+            element.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
+                    <h1 style="color: #059669; margin: 0; font-size: 28px;">🌱 AgroSense AI</h1>
+                    <h2 style="color: #047857; margin: 10px 0 0 0; font-size: 20px;">Farm Recommendations Report</h2>
+                </div>
+
+                <div style="margin-bottom: 20px; background-color: #f0fdf4; padding: 15px; border-left: 4px solid #10b981; border-radius: 4px;">
+                    <h3 style="color: #059669; margin: 0 0 10px 0;">Farm Information</h3>
+                    <p style="margin: 5px 0;"><strong>Farmer:</strong> ${currentUserProfile?.name || 'Unknown'}</p>
+                    <p style="margin: 5px 0;"><strong>Location:</strong> ${currentUserProfile?.farmLocation || 'Unknown'}</p>
+                    <p style="margin: 5px 0;"><strong>Report Date:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+
+                <div style="margin-bottom: 20px; background-color: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 4px;">
+                    <h3 style="color: #d97706; margin: 0 0 10px 0;">Farm Conditions</h3>
+                    <p style="margin: 5px 0;"><strong>Crop Type:</strong> ${lastRecommendationData.inputs.crop}</p>
+                    <p style="margin: 5px 0;"><strong>Soil Moisture:</strong> ${lastRecommendationData.inputs.moisture}</p>
+                    <p style="margin: 5px 0;"><strong>Temperature:</strong> ${lastRecommendationData.inputs.temp}°C</p>
+                    <p style="margin: 5px 0;"><strong>Humidity:</strong> ${lastRecommendationData.inputs.humidity}%</p>
+                    <p style="margin: 5px 0;"><strong>Weather Forecast:</strong> ${lastRecommendationData.inputs.weather}</p>
+                    <p style="margin: 5px 0;"><strong>Pest/Disease Status:</strong> ${lastRecommendationData.inputs.pests}</p>
+                </div>
+
+                <div style="margin-bottom: 20px; background-color: #f3f4f6; padding: 15px; border-left: 4px solid #6b7280; border-radius: 4px;">
+                    <h3 style="color: #374151; margin: 0 0 10px 0;">AI Recommendations</h3>
+                    <div style="white-space: pre-wrap; line-height: 1.6; color: #374151;">
+                        ${lastRecommendationData.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 12px;">
+                    <p style="margin: 0;">Generated by AgroSense AI | Smart Farm Assistant</p>
+                    <p style="margin: 5px 0 0 0;">© 2026 All Rights Reserved</p>
+                </div>
+            `;
+
+            const opt = {
+                margin: 10,
+                filename: `AgroSense_Recommendations_${new Date().getTime()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function generateDiseasePDF() {
+            if (!lastDiseaseAnalysisData.content || !lastDiseaseAnalysisData.cropType) {
+                showAlert("No disease analysis data available to download.");
+                return;
+            }
+
+            const element = document.createElement('div');
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+            element.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #dc2626; padding-bottom: 20px;">
+                    <h1 style="color: #991b1b; margin: 0; font-size: 28px;">🌱 AgroSense AI</h1>
+                    <h2 style="color: #b91c1c; margin: 10px 0 0 0; font-size: 20px;">🦠 Crop Disease Detection Report</h2>
+                </div>
+
+                <div style="margin-bottom: 20px; background-color: #fef2f2; padding: 15px; border-left: 4px solid #dc2626; border-radius: 4px;">
+                    <h3 style="color: #991b1b; margin: 0 0 10px 0;">Analysis Information</h3>
+                    <p style="margin: 5px 0;"><strong>Farmer:</strong> ${currentUserProfile?.name || 'Unknown'}</p>
+                    <p style="margin: 5px 0;"><strong>Farm Location:</strong> ${currentUserProfile?.farmLocation || 'Unknown'}</p>
+                    <p style="margin: 5px 0;"><strong>Crop Type Analyzed:</strong> ${lastDiseaseAnalysisData.cropType}</p>
+                    <p style="margin: 5px 0;"><strong>Analysis Date:</strong> ${lastDiseaseAnalysisData.timestamp || new Date().toLocaleString()}</p>
+                </div>
+
+                <div style="margin-bottom: 20px; background-color: #f3f4f6; padding: 15px; border-left: 4px solid #6b7280; border-radius: 4px;">
+                    <h3 style="color: #374151; margin: 0 0 10px 0;">Detailed Analysis</h3>
+                    <div style="white-space: pre-wrap; line-height: 1.6; color: #374151;">
+                        ${lastDiseaseAnalysisData.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 12px;">
+                    <p style="margin: 0;">Generated by AgroSense AI | Smart Farm Assistant</p>
+                    <p style="margin: 5px 0 0 0;">© 2026 All Rights Reserved</p>
+                    <p style="margin: 5px 0 0 0; color: #ef4444; font-weight: bold;">⚠️ Always consult with local agricultural experts for critical decisions</p>
+                </div>
+            `;
+
+            const opt = {
+                margin: 10,
+                filename: `AgroSense_Disease_Analysis_${new Date().getTime()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // --- Reminders Functions ---
+
+        async function addReminder() {
+            const type = document.getElementById('reminder-type').value;
+            const text = document.getElementById('reminder-text').value;
+            const datetime = document.getElementById('reminder-datetime').value;
+
+            if (!text.trim() || !datetime) {
+                showAlert('Please fill in all reminder fields.');
+                return;
+            }
+
+            // If authenticated, save reminder to Firestore under user's reminders collection
+            if (currentUser) {
+                try {
+                    await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'reminders'), {
+                        type,
+                        text,
+                        datetime,
+                        createdAt: serverTimestamp(),
+                        notified: false
+                    });
+                    document.getElementById('reminder-text').value = '';
+                    document.getElementById('reminder-datetime').value = '';
+                    showAlert('✅ Reminder saved to your account. You will be notified when due.');
+                    return;
+                } catch (err) {
+                    console.error('Failed to save reminder', err);
+                    showAlert('Failed to save reminder: ' + (err.message || 'unknown error'));
+                    return;
+                }
+            }
+
+            // Fallback for unauthenticated users: localStorage
+            reminders.push({ type, text, datetime });
+            localStorage.setItem('agrosense-reminders', JSON.stringify(reminders));
+
+            // Clear form
+            document.getElementById('reminder-text').value = '';
+            document.getElementById('reminder-datetime').value = '';
+
+            loadReminders();
+            showAlert('✅ Reminder added successfully!');
+        }
+
+        function deleteReminder(index) {
+            reminders.splice(index, 1);
+            localStorage.setItem('agrosense-reminders', JSON.stringify(reminders));
+            loadReminders();
+        }
+
+        async function deleteReminderById(id) {
+            if (!currentUser) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'reminders', id));
+            } catch (err) {
+                console.error('Failed to delete reminder', err);
+            }
+        }
+
+        // Expose global functions
+        window.switchTab = switchTab;
+        window.navigateToPage = navigateToPage;
+        window.handleUserAuthenticated = handleUserAuthenticated;
+        window.loadReminders = loadReminders;
+        window.loadRecommendationHistory = loadRecommendationHistory;
+        window.loadDiseaseHistory = loadDiseaseHistory;
+        window.startReminderChecker = startReminderChecker;
+        window.updateDashboardStats = updateDashboardStats;
+        window.updateReportsCount = updateReportsCount;
+        window.updateDiseaseCount = updateDiseaseCount;
+        window.addReminder = addReminder;
+        window.showAlert = showAlert;
+
+        // --- Export & Clear Reminders ---
+        async function exportReminders() {
+            try {
+                let data = [];
+                if (currentUser) {
+                    const remCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'reminders');
+                    const snap = await getDocs(remCol);
+                    data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                } else {
+                    const stored = localStorage.getItem('agrosense-reminders');
+                    data = stored ? JSON.parse(stored) : [];
+                }
+
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `agrosense_reminders_${new Date().toISOString()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Export failed', err);
+                showAlert('Failed to export reminders: ' + (err.message || 'unknown'));
+            }
+        }
+
+        async function clearReminders() {
+            const ok = confirm('Clear all reminders? This cannot be undone.');
+            if (!ok) return;
+
+            if (currentUser) {
+                try {
+                    const remCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'reminders');
+                    const snap = await getDocs(remCol);
+                    const deletes = snap.docs.map(d => deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'reminders', d.id)));
+                    await Promise.all(deletes);
+                    showAlert('All reminders cleared from your account.');
+                    return;
+                } catch (err) {
+                    console.error('Failed to clear reminders', err);
+                    showAlert('Failed to clear reminders: ' + (err.message || 'unknown'));
+                    return;
+                }
+            }
+
+            // Guests: clear localStorage
+            reminders = [];
+            localStorage.removeItem('agrosense-reminders');
+            loadReminders();
+            showAlert('Local reminders cleared.');
+        }
+
+        window.exportReminders = exportReminders;
+        window.clearReminders = clearReminders;
+
+        // --- Crop Guide Functions ---
+
+        function loadCropGuides() {
+            const guideContent = document.getElementById('crop-guide-content');
+            const selectedCrop = cropTypeSelect.value;
+
+            guideContent.innerHTML = Object.entries(cropGuides).map(([cropName, guide]) => {
+                const isSelected = cropName === selectedCrop;
+                return `
+                    <div class="border ${isSelected ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'} rounded-lg p-6 hover:shadow-lg transition">
+                        <h3 class="text-xl font-bold text-emerald-800 mb-4">🌾 ${cropName}</h3>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <p class="font-semibold text-gray-700">🗓️ Seasons:</p>
+                                <p class="text-gray-600">${guide.seasons}</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-700">⏱️ Days to Maturity:</p>
+                                <p class="text-gray-600">${guide.days}</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-700">💧 Water Requirements:</p>
+                                <p class="text-gray-600">${guide.water}</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-700">⚠️ Common Diseases:</p>
+                                <p class="text-gray-600">${guide.diseases}</p>
+                            </div>
+                            <div class="bg-white/60 p-3 rounded border-l-4 border-emerald-500">
+                                <p class="font-semibold text-gray-700 mb-2">💡 Growing Tips:</p>
+                                <p class="text-gray-600 whitespace-pre-line text-xs">${guide.tips}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- Custom Crop Query ---
+        function initCustomCropQuery() {
+            const input = document.getElementById('crop-query-input');
+            const btn = document.getElementById('crop-query-button');
+            const resp = document.getElementById('crop-query-response');
+            const spinner = document.getElementById('crop-query-spinner');
+            if (!input || !btn || !resp) return;
+            btn.onclick = handleCustomCropQuery;
+            input.onkeypress = (e) => { if (e.key === 'Enter') handleCustomCropQuery(); };
+            resp.classList.add('hidden');
+        }
+
+        async function handleCustomCropQuery() {
+            const input = document.getElementById('crop-query-input');
+            const resp = document.getElementById('crop-query-response');
+            const spinner = document.getElementById('crop-query-spinner');
+            if (!input || !resp) return;
+            const q = (input.value || '').trim();
+            if (!q) return;
+            if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
+                showAlert("⚠️ API Key not configured for AI responses. Please configure your Gemini API key to use this feature.");
+                return;
+            }
+            spinner.classList.remove('hidden');
+            resp.classList.add('hidden');
+            try {
+                const prompt = `You are an expert agronomist. Provide a concise crop guide for: "${q}". Include sections: Planting seasons, Spacing, Water requirements, Fertilizer recommendations, Common pests/diseases and simple treatments, Quick tips. Use short paragraphs and bullets where appropriate.`;
+                const data = await callGeminiWithRetry(prompt);
+                let text = '';
+                if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                    text = data.candidates[0].content.parts[0].text || '';
+                } else if (typeof data === 'string') {
+                    text = data;
+                } else {
+                    text = JSON.stringify(data);
+                }
+                resp.textContent = text;
+                resp.classList.remove('hidden');
+            } catch (err) {
+                console.error('Crop query error', err);
+                showAlert('Failed to get crop guide: ' + (err.message || 'unknown error'));
+            } finally {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // --- Dashboard Stats Update ---
+
+        function updateDashboardStats() {
+            // Update reminders count
+            document.getElementById('stat-reminders-count').textContent = reminders.length;
+            
+            // Calculate health score based on disease analyses
+            const healthScore = reminders.length === 0 ? 'Excellent' : reminders.length > 5 ? 'Needs Care' : 'Good';
+            document.getElementById('stat-health-score').textContent = healthScore;
+        }
+
+        function updateReportsCount() {
+            if (!currentUser) return;
+            const q = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'recommendations');
+            
+            onSnapshot(q, (snapshot) => {
+                document.getElementById('stat-reports-count').textContent = snapshot.docs.length;
+            });
+        }
+
+        function updateDiseaseCount() {
+            if (!currentUser) return;
+            const q = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'disease_analyses');
+            
+            onSnapshot(q, (snapshot) => {
+                document.getElementById('stat-disease-count').textContent = snapshot.docs.length;
+            });
+        }
+
+        // --- Reminders (Firestore-backed when authenticated) ---
+        let reminderCheckerInterval = null;
+
+        async function loadReminders() {
+            const remindersList = document.getElementById('reminders-list');
+            const remindersEmptyState = document.getElementById('reminders-empty-state');
+
+            // If user is authenticated, listen to their reminders in Firestore
+            if (currentUser) {
+                const remCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'reminders');
+                // Clean up any existing reminders listener
+                if (unsubscribeReminders) {
+                    try { unsubscribeReminders(); } catch (e) { }
+                    unsubscribeReminders = null;
+                }
+                unsubscribeReminders = onSnapshot(remCol, (snapshot) => {
+                    reminders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    // Render
+                    if (reminders.length === 0) {
+                        remindersList.innerHTML = '';
+                        remindersEmptyState.classList.remove('hidden');
+                        updateDashboardStats();
+                        return;
+                    }
+                    remindersEmptyState.classList.add('hidden');
+                    remindersList.innerHTML = reminders.map((rem) => {
+                        const reminderDate = new Date(rem.datetime);
+                        const now = new Date();
+                        const isOverdue = reminderDate < now && !rem.notified;
+                        const timeUntil = isOverdue ? 'Overdue' : reminderDate.toLocaleString();
+                        return `
+                            <div class="bg-white/60 border-l-4 ${isOverdue ? 'border-red-500 bg-red-50/50' : 'border-emerald-500 bg-emerald-50/50'} p-4 rounded flex justify-between items-center hover:shadow-md transition">
+                                <div class="flex-grow">
+                                    <p class="font-semibold text-gray-800">${rem.type} - ${rem.text}</p>
+                                    <p class="text-sm ${isOverdue ? 'text-red-600' : 'text-gray-500'}">${timeUntil}</p>
+                                </div>
+                                <button onclick="deleteReminderById('${rem.id}')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm transition">✕</button>
+                            </div>
+                        `;
+                    }).join('');
+                    updateDashboardStats();
+                }, (err) => {
+                    console.error('Reminders listener error', err);
+                });
+                return;
+            }
+
+            // Fallback: localStorage for unauthenticated users
+            const stored = localStorage.getItem('agrosense-reminders');
+            if (stored) reminders = JSON.parse(stored);
+
+            if (reminders.length === 0) {
+                remindersList.innerHTML = '';
+                remindersEmptyState.classList.remove('hidden');
+                updateDashboardStats();
+                return;
+            }
+
+            remindersEmptyState.classList.add('hidden');
+            remindersList.innerHTML = reminders.map((reminder, index) => {
+                const reminderDate = new Date(reminder.datetime);
+                const now = new Date();
+                const isOverdue = reminderDate < now;
+                const timeUntil = isOverdue ? 'Overdue' : reminderDate.toLocaleString();
+
+                return `
+                    <div class="bg-white/60 border-l-4 ${isOverdue ? 'border-red-500 bg-red-50/50' : 'border-emerald-500 bg-emerald-50/50'} p-4 rounded flex justify-between items-center hover:shadow-md transition">
+                        <div class="flex-grow">
+                            <p class="font-semibold text-gray-800">${reminder.type} - ${reminder.text}</p>
+                            <p class="text-sm ${isOverdue ? 'text-red-600' : 'text-gray-500'}">${timeUntil}</p>
+                        </div>
+                        <button onclick="deleteReminder(${index})" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm transition">
+                            ✕
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            updateDashboardStats();
+        }
+
+        // --- Chat Assistant ---
+        const CHAT_STORAGE_KEY = 'agrosense-chat-history';
+
+        function initChatAssistant() {
+            // Load suggestions and history
+            loadCommonQuestions();
+            renderChatHistory();
+
+            // Wire send button and enter key
+            chatSendButton.onclick = sendChatMessage;
+            chatInput.onkeypress = (e) => {
+                if (e.key === 'Enter') sendChatMessage();
+            };
+        }
+
+        function loadCommonQuestions() {
+            const suggestions = [
+                'What fertilizer is best for maize?',
+                'How often should I water tomatoes?',
+                'How to identify and treat leaf rust?',
+                'Optimal planting time for beans in my region?',
+                'How to improve soil moisture retention?'
+            ];
+            chatSuggestions.innerHTML = '';
+            suggestions.forEach(q => {
+                const b = document.createElement('button');
+                b.className = 'w-full text-left px-3 py-2 bg-white/60 rounded border border-gray-200 hover:bg-white/80 text-sm';
+                b.textContent = q;
+                b.onclick = () => {
+                    chatInput.value = q;
+                    chatInput.focus();
+                };
+                chatSuggestions.appendChild(b);
+            });
+        }
+
+        function getChatHistory() {
+            try {
+                const stored = localStorage.getItem(CHAT_STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveChatHistory(history) {
+            try {
+                localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history));
+            } catch (e) {
+                console.warn('Failed to save chat history', e);
+            }
+        }
+
+        function renderChatHistory() {
+            const history = getChatHistory();
+            chatHistory.innerHTML = '';
+            history.forEach(msg => {
+                const el = document.createElement('div');
+                el.className = msg.role === 'user' ? 'text-right mb-2' : 'text-left mb-2';
+                el.innerHTML = `<div class="inline-block max-w-full p-2 rounded ${msg.role === 'user' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800'}">${msg.text}</div>`;
+                chatHistory.appendChild(el);
+            });
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        async function sendChatMessage() {
+            const text = (chatInput.value || '').trim();
+            chatError.classList.add('hidden');
+            if (!text) return;
+
+            const history = getChatHistory();
+            history.push({ role: 'user', text, ts: Date.now() });
+            saveChatHistory(history);
+            renderChatHistory();
+            chatInput.value = '';
+
+            // Disable while waiting
+            chatSendButton.disabled = true;
+
+            try {
+                const prompt = `Act as an expert agronomist and answer concisely. User question: ${text}`;
+                const data = await callGeminiWithRetry(prompt);
+                let assistantText = '';
+                if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                    assistantText = data.candidates[0].content.parts[0].text || '';
+                } else if (typeof data === 'string') {
+                    assistantText = data;
+                } else {
+                    assistantText = JSON.stringify(data);
+                }
+
+                history.push({ role: 'assistant', text: assistantText, ts: Date.now() });
+                saveChatHistory(history);
+                renderChatHistory();
+            } catch (err) {
+                console.error('Chat error', err);
+                chatError.textContent = err.message || 'Failed to get an answer';
+                chatError.classList.remove('hidden');
+            } finally {
+                chatSendButton.disabled = false;
+            }
+        }
+
+        // --- Load Reminders from LocalStorage ---
+
+        function initReminders() {
+            const stored = localStorage.getItem('agrosense-reminders');
+            if (stored) {
+                reminders = JSON.parse(stored);
+            }
+            updateDashboardStats();
+        }
+
+        // Periodically check for due reminders and notify the user (runs while app open)
+        async function checkDueReminders() {
+            if (!currentUser) return;
+            try {
+                const remCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'reminders');
+                const snap = await getDocs(remCol);
+                const now = new Date();
+                for (const d of snap.docs) {
+                    const data = d.data();
+                    if (data.notified) continue;
+                    const rd = new Date(data.datetime);
+                    if (isNaN(rd.getTime())) continue;
+                    if (rd <= now) {
+                        // Notify user in-app and mark as notified
+                        sendReminderMessage({ id: d.id, ...data });
+                        try {
+                            await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'reminders', d.id), { notified: true, notifiedAt: serverTimestamp() });
+                        } catch (err) {
+                            console.error('Failed to mark reminder notified', err);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Error checking reminders', err);
+            }
+        }
+
+        function startReminderChecker() {
+            if (reminderCheckerInterval) clearInterval(reminderCheckerInterval);
+            // Run immediately and then every minute
+            checkDueReminders();
+            reminderCheckerInterval = setInterval(checkDueReminders, 60 * 1000);
+        }
+
+        function sendReminderMessage(reminder) {
+            // Show an in-app alert modal and console log. Extend this to call external SMS/email APIs as needed.
+            const msg = `Reminder: ${reminder.type} - ${reminder.text} (Scheduled: ${new Date(reminder.datetime).toLocaleString()})`;
+            showAlert(msg);
+            console.log('Send reminder (placeholder):', msg);
+            if (currentUserProfile && currentUserProfile.phone) {
+                console.log('User phone available for SMS:', currentUserProfile.phone);
+                // Placeholder: integrate Twilio or other SMS provider here.
+            }
+        }
+
         // --- Event Listeners ---
 
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
+            initReminders();
 
             // Auth Forms
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = authEmailInput.value;
+                const identifier = authEmailInput.value.trim();
                 const password = authPasswordInput.value;
                 const isLogin = authSubmitButton.textContent === 'Login';
+                const usernameInput = document.getElementById('auth-username');
+                const phoneInput = document.getElementById('auth-phone');
                 
                 authErrorMessage.classList.add('hidden');
                 authSuccessMessage.classList.add('hidden');
 
                 try {
                     if (isLogin) {
-                        await signInWithEmailAndPassword(auth, email, password);
+                        // Allow login by email, username or phone. If identifier is not an email, try identity lookup.
+                        let emailToUse = identifier;
+                        if (!identifier.includes('@')) {
+                            // try username mapping
+                            const unameDoc = await getDoc(doc(db, `artifacts/${appId}/identities`, `username:${identifier.toLowerCase()}`));
+                            if (unameDoc.exists()) {
+                                emailToUse = unameDoc.data().email;
+                            } else {
+                                const phoneDoc = await getDoc(doc(db, `artifacts/${appId}/identities`, `phone:${identifier}`));
+                                if (phoneDoc.exists()) {
+                                    emailToUse = phoneDoc.data().email;
+                                } else {
+                                    throw new Error('No account found for that username or phone.');
+                                }
+                            }
+                        }
+                        await signInWithEmailAndPassword(auth, emailToUse, password);
                     } else {
-                        await createUserWithEmailAndPassword(auth, email, password);
+                        // Sign up flow: create user and store username/phone mappings
+                        const username = usernameInput ? usernameInput.value.trim() : '';
+                        const phone = phoneInput ? phoneInput.value.trim() : '';
+
+                        // Validate uniqueness of username and phone
+                        if (username) {
+                            const unameDoc = await getDoc(doc(db, `artifacts/${appId}/identities`, `username:${username.toLowerCase()}`));
+                            if (unameDoc.exists()) throw new Error('Username already taken. Please choose another.');
+                        }
+                        if (phone) {
+                            const phonDoc = await getDoc(doc(db, `artifacts/${appId}/identities`, `phone:${phone}`));
+                            if (phonDoc.exists()) throw new Error('Phone number already in use.');
+                        }
+
+                        const userCred = await createUserWithEmailAndPassword(auth, identifier, password);
+                        const uid = userCred.user.uid;
+
+                        // Create user profile document
+                        const profileData = {
+                            name: username || '',
+                            phone: phone || '',
+                            email: identifier,
+                            uid: uid,
+                            createdAt: serverTimestamp()
+                        };
+                        await setDoc(doc(db, `artifacts/${appId}/users/${uid}/profiles`, uid), profileData);
+
+                        // Create identity mappings so users can login with username or phone
+                        if (username) {
+                            await setDoc(doc(db, `artifacts/${appId}/identities`, `username:${username.toLowerCase()}`), { email: identifier, uid });
+                        }
+                        if (phone) {
+                            await setDoc(doc(db, `artifacts/${appId}/identities`, `phone:${phone}`), { email: identifier, uid });
+                        }
+
                         authSuccessMessage.textContent = "Account created! Redirecting...";
                         authSuccessMessage.classList.remove('hidden');
                     }
@@ -1179,6 +2206,60 @@ If the crop appears healthy, state that clearly and provide general care recomme
                 authSubmitButton.textContent = isLogin ? 'Sign Up' : 'Login';
                 toggleAuthModeButton.textContent = isLogin ? 'Login' : 'Sign Up';
                 authErrorMessage.classList.add('hidden');
+                // Show/hide username and phone inputs when switching to sign up
+                const usernameContainer = document.getElementById('auth-username-container');
+                const phoneContainer = document.getElementById('auth-phone-container');
+                const phoneField = document.getElementById('auth-phone');
+                if (isLogin) {
+                    usernameContainer.classList.remove('hidden');
+                    phoneContainer.classList.remove('hidden');
+                    if (phoneField) phoneField.required = true; // require phone on sign up
+                } else {
+                    usernameContainer.classList.add('hidden');
+                    phoneContainer.classList.add('hidden');
+                    if (phoneField) phoneField.required = false;
+                }
+            });
+
+            // Login Form
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = loginEmail.value.trim();
+                const phone = loginPhone.value.trim();
+                const password = loginPassword.value;
+                
+                loginErrorMessage.classList.add('hidden');
+                loginSuccessMessage.classList.add('hidden');
+                loginSubmitButton.disabled = true;
+                loginSubmitButton.textContent = 'Signing in...';
+
+                try {
+                    // Sign in with email and password
+                    await signInWithEmailAndPassword(auth, email, password);
+                    loginSuccessMessage.textContent = "Login successful! Redirecting...";
+                    loginSuccessMessage.classList.remove('hidden');
+                    // Auth state change will trigger page navigation automatically
+                } catch (error) {
+                    loginErrorMessage.textContent = error.message || 'Login failed. Please check your credentials.';
+                    loginErrorMessage.classList.remove('hidden');
+                } finally {
+                    loginSubmitButton.disabled = false;
+                    loginSubmitButton.textContent = 'Sign In';
+                }
+            });
+
+            // Go to Signup Button
+            goToSignupButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginPage.classList.add('hidden');
+                authPage.classList.remove('hidden');
+                // Reset auth form to signup mode
+                authTitle.textContent = 'Sign Up for AgroSense';
+                authSubmitButton.textContent = 'Sign Up';
+                toggleAuthModeButton.textContent = 'Login';
+                document.getElementById('auth-username-container')?.classList.remove('hidden');
+                document.getElementById('auth-phone-container')?.classList.remove('hidden');
+                document.getElementById('auth-phone').required = true;
             });
 
             // Profile Form
@@ -1210,8 +2291,20 @@ If the crop appears healthy, state that clearly and provide general care recomme
             tabGetRecommendationsButton.addEventListener('click', () => switchTab('getRecommendations'));
             tabRecommendationHistoryButton.addEventListener('click', () => switchTab('recommendationHistory'));
             tabDiseaseDetectionButton.addEventListener('click', () => switchTab('diseaseDetection'));
+            tabRemindersButton.addEventListener('click', () => switchTab('reminders'));
+            tabCropGuideButton.addEventListener('click', () => switchTab('cropGuide'));
+            tabChatAssistantButton.addEventListener('click', () => switchTab('chatAssistant'));
+            document.getElementById('export-reminders-button').addEventListener('click', exportReminders);
+            document.getElementById('clear-reminders-button').addEventListener('click', clearReminders);
 
             generateRecommendationsButton.addEventListener('click', handleGenerateRecommendations);
+            downloadRecommendationsButton.addEventListener('click', generateRecommendationPDF);
+
+            // Reminder Event Listeners
+            document.getElementById('add-reminder-button').addEventListener('click', addReminder);
+            document.getElementById('reminder-text').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addReminder();
+            });
 
             // Disease Detection Event Listeners
             useCameraButton.addEventListener('click', startCamera);
@@ -1220,6 +2313,7 @@ If the crop appears healthy, state that clearly and provide general care recomme
             clearImageButton.addEventListener('click', clearImage);
             uploadFromFilesButton.addEventListener('click', () => imageUploadInput.click());
             analyzeDiseaseButton.addEventListener('click', analyzeDiseaseImage);
+            downloadDiseaseButton.addEventListener('click', generateDiseasePDF);
 
             imageUploadInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
@@ -1251,5 +2345,484 @@ If the crop appears healthy, state that clearly and provide general care recomme
         });
 
     </script>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSense AI | Unified Farm Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .glass-panel { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .bg-farm { 
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="bg-farm min-h-screen text-slate-900 overflow-x-hidden">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-white/20 px-6 py-4 shadow-lg flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="bg-emerald-600 p-2 rounded-lg text-white shadow-emerald-200 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5 0 5.5-18 0-18"/><path d="M14 20c-5.5 0-5.5-18 0-18"/></svg>
+            </div>
+            <div>
+                <h1 class="font-black text-xl text-slate-800 tracking-tight leading-none">AgroSense AI</h1>
+                <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest mt-1">Unified Farm Station</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div class="hidden md:flex flex-col text-right">
+                <span id="system-time" class="text-xs font-bold text-slate-500 uppercase tracking-tighter">--:--:--</span>
+                <span class="text-[10px] text-emerald-500 font-black">STATION ONLINE</span>
+            </div>
+            <button id="toggle-sim" class="flex items-center gap-2 px-4 py-2 text-xs rounded-xl font-bold transition-all border bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 shadow-sm">
+                <svg id="refresh-icon" class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                <span id="sim-status">LIVE SENSORS</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="p-4 lg:p-8 max-w-[1600px] mx-auto w-full">
+        
+        <!-- Main Application Shell -->
+        <div class="glass-panel rounded-[2rem] shadow-2xl border border-white/40 overflow-hidden flex flex-col lg:flex-row min-h-[800px]">
+            
+            <!-- Side Navigation -->
+            <aside class="w-full lg:w-72 bg-slate-50/50 border-r border-slate-200/60 p-6 flex flex-col">
+                <div class="space-y-1 mb-8">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-4 mb-4">Operations</h3>
+                    <button onclick="showTab('sensors')" id="btn-sensors" class="tab-btn w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-bold transition-all bg-emerald-600 text-white shadow-lg shadow-emerald-200/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        Crop Sensors
+                    </button>
+                    <button onclick="showTab('disease')" id="btn-disease" class="tab-btn w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-bold transition-all text-slate-500 hover:bg-white hover:shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                        Health Scan
+                    </button>
+                    <button onclick="showTab('insights')" id="btn-insights" class="tab-btn w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-bold transition-all text-slate-500 hover:bg-white hover:shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                        AI Insights
+                    </button>
+                    <button onclick="showTab('chat')" id="btn-chat" class="tab-btn w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-bold transition-all text-slate-500 hover:bg-white hover:shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        AI Assistant
+                    </button>
+                </div>
+
+                <!-- Zone Switcher (Integrated from Sensors System) -->
+                <div id="zone-nav-container" class="mt-auto">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-4 mb-4">Active Zones</h3>
+                    <div id="zone-container" class="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
+                        <!-- Zones Injected via JS -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Workspace Area -->
+            <div class="flex-1 p-6 lg:p-10 overflow-y-auto custom-scrollbar bg-white/30">
+                
+                <!-- Sensor Dashboard Tab -->
+                <div id="tab-sensors" class="tab-content space-y-8">
+                    <!-- Alert Banner -->
+                    <div id="alert-banner" class="hidden bg-rose-50 border border-rose-100 rounded-2xl p-4 flex items-center gap-4 animate-pulse-slow">
+                        <div class="bg-rose-500 p-2 rounded-lg text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-black text-rose-900 text-sm">Action Required</h4>
+                            <p id="alert-msg" class="text-xs text-rose-700">Critical environmental deviation detected.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-4 bg-white/60 p-6 rounded-3xl border border-white/40">
+                        <div>
+                            <h2 id="active-zone-name" class="text-3xl font-black text-slate-800 tracking-tight">Zone Overview</h2>
+                            <p id="active-zone-crop" class="text-emerald-600 font-bold">Initializing...</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="bg-slate-900 rounded-2xl px-6 py-3 text-white text-center min-w-[120px]">
+                                <div class="text-[9px] font-bold text-slate-400 uppercase mb-1">Gateway</div>
+                                <div class="text-lg font-black tracking-tighter">SG-9021-X</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sensors-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                        <!-- Sensor Cards Injected here -->
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <h3 class="font-black text-lg text-slate-800 mb-8 flex items-center gap-3">
+                                <span class="w-2 h-6 bg-emerald-500 rounded-full"></span>
+                                Optimal Range Check
+                            </h3>
+                            <div id="range-list" class="space-y-8">
+                                <!-- Ranges injected via JS -->
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl">
+                            <h3 class="font-bold text-lg mb-8 flex items-center gap-2 text-emerald-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                Autonomous Edge
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4 p-5 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+                                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-bold">Smart Irrigation</div>
+                                        <div class="text-[10px] text-slate-500">Soil moisture <span id="irrigation-status">--</span></div>
+                                    </div>
+                                    <div id="irrigation-indicator" class="h-2.5 w-2.5 rounded-full bg-slate-700"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Scan Tab -->
+                <div id="tab-disease" class="tab-content hidden space-y-8 max-w-4xl mx-auto">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-black text-slate-800">Health Scan</h2>
+                        <p class="text-slate-500 font-medium">Point camera at crop foliage for instant AI diagnosis</p>
+                    </div>
+                    <div class="border-4 border-dashed border-slate-200 bg-white/40 rounded-[2.5rem] p-8">
+                        <div class="aspect-video bg-slate-900 rounded-3xl mb-8 flex items-center justify-center text-slate-400 relative overflow-hidden shadow-2xl">
+                            <span id="cam-placeholder" class="font-bold">Camera Offline</span>
+                            <video id="video" class="hidden w-full h-full object-cover" autoplay playsinline></video>
+                        </div>
+                        <div class="flex gap-4 justify-center">
+                            <button onclick="startCamera()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-black transition-all">Enable Lens</button>
+                            <button onclick="scanImage()" class="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200">Capture & Scan</button>
+                        </div>
+                    </div>
+                    <div id="scan-result" class="hidden p-8 bg-amber-50 border border-amber-100 rounded-3xl animate-in slide-in-from-bottom-4 duration-500">
+                        <div class="flex gap-4 items-start">
+                            <div class="p-3 bg-amber-500 text-white rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-black text-amber-900">Diagnosis: Early Blight (Alternaria solani)</h4>
+                                <p class="text-amber-800 mt-2 font-medium">Target-like brown spots detected on lower leaves. Recommendation: Prune infected foliage and apply copper-based fungicide. Avoid overhead watering to prevent spore dispersal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights Tab -->
+                <div id="tab-insights" class="tab-content hidden space-y-8">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                        <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm space-y-6">
+                            <h3 class="text-2xl font-black text-slate-800">Forecast Insight</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-2">Target Cultivation</label>
+                                    <select id="insight-crop" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold text-slate-800 focus:ring-2 ring-emerald-500">
+                                        <option>Corn (Zea mays)</option>
+                                        <option>Tomato (Solanum lycopersicum)</option>
+                                        <option>Coffee (Arabica)</option>
+                                    </select>
+                                </div>
+                                <button onclick="generateInsights()" class="w-full bg-emerald-600 text-white font-black py-5 rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200">Run Precision Analysis</button>
+                            </div>
+                        </div>
+                        <div id="insight-display" class="bg-white/40 border border-white/60 rounded-[2rem] p-8 min-h-[400px] flex items-center justify-center text-center italic text-slate-400">
+                            Configure parameters to generate a precision agricultural report.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Assistant Tab -->
+                <div id="tab-chat" class="tab-content hidden flex flex-col h-full max-w-4xl mx-auto">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center font-black">AI</div>
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-800">AgroSense Assistant</h2>
+                            <p class="text-emerald-500 text-[10px] font-bold uppercase">Expert Agronomist Mode Active</p>
+                        </div>
+                    </div>
+                    <div id="chat-window" class="flex-grow bg-white/60 rounded-3xl p-6 overflow-y-auto mb-6 border border-white/40 space-y-6 custom-scrollbar min-h-[400px]">
+                        <div class="bg-emerald-600 text-white self-start p-5 rounded-3xl rounded-tl-none max-w-[85%] text-sm font-medium shadow-lg">
+                            System initialized. I have full access to your sensor data from **North Field A**. How can I assist with your cultivation today?
+                        </div>
+                    </div>
+                    <div class="flex gap-3 bg-white p-2 rounded-[2rem] shadow-xl border border-slate-100">
+                        <input type="text" id="chat-input" placeholder="Ask about irrigation, soil, or pests..." class="flex-1 p-4 bg-transparent outline-none font-bold text-slate-800 placeholder:text-slate-300">
+                        <button onclick="sendMsg()" class="bg-slate-900 text-white px-10 py-4 rounded-[1.5rem] font-black hover:bg-black transition-all">SEND</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="p-8 text-center">
+        <p class="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Powered by AgroSense Edge AI Engine V4.2</p>
+    </footer>
+
+    <script>
+        // --- DATA & CONFIG ---
+        const ZONES = [
+            { id: 'z1', name: 'North Field A', crop: 'Corn', thresholds: { soil: 40, temp: 32 } },
+            { id: 'z2', name: 'Greenhouse 01', crop: 'Tomatoes', thresholds: { soil: 45, temp: 28 } },
+            { id: 'z3', name: 'East Orchard', crop: 'Wheat', thresholds: { soil: 35, temp: 30 } }
+        ];
+
+        const SENSOR_CONFIG = [
+            { id: 'soil', label: 'Soil Moisture', unit: '%', color: 'text-blue-500', bg: 'bg-blue-50', icon: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>' },
+            { id: 'humidity', label: 'Air Humidity', unit: '%', color: 'text-cyan-500', bg: 'bg-cyan-50', icon: '<path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>' },
+            { id: 'light', label: 'Light (PAR)', unit: 'lux', color: 'text-amber-500', bg: 'bg-amber-50', icon: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>' },
+            { id: 'temp', label: 'Ambient Temp', unit: '°C', color: 'text-rose-500', bg: 'bg-rose-50', icon: '<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>' }
+        ];
+
+        // --- STATE ---
+        let activeTab = 'sensors';
+        let selectedZoneId = 'z1';
+        let isSimulating = true;
+        let sensorState = {};
+
+        // --- INITIALIZATION ---
+        function init() {
+            ZONES.forEach(z => {
+                sensorState[z.id] = {
+                    soil: 42 + Math.random() * 10,
+                    humidity: 60 + Math.random() * 10,
+                    light: 800 + Math.random() * 400,
+                    temp: 24 + Math.random() * 4
+                };
+            });
+            renderZones();
+            updateSensorView();
+            startLoops();
+        }
+
+        // --- UI ROUTING ---
+        function showTab(tabId) {
+            activeTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-200/50');
+                b.classList.add('text-slate-500');
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-200/50');
+            activeBtn.classList.remove('text-slate-500');
+
+            // Toggle zone sidebar visibility based on context
+            const zoneNav = document.getElementById('zone-nav-container');
+            if(tabId === 'sensors' || tabId === 'chat') {
+                zoneNav.classList.remove('opacity-20', 'pointer-events-none');
+            } else {
+                zoneNav.classList.add('opacity-20', 'pointer-events-none');
+            }
+        }
+
+        // --- SENSOR LOGIC ---
+        function renderZones() {
+            const container = document.getElementById('zone-container');
+            container.innerHTML = ZONES.map(z => `
+                <button onclick="setZone('${z.id}')" class="w-full text-left p-4 rounded-2xl transition-all border-l-4 ${selectedZoneId === z.id ? 'bg-white shadow-sm border-emerald-500' : 'border-transparent hover:bg-white/50 text-slate-400'}">
+                    <div class="font-black text-xs uppercase tracking-tight ${selectedZoneId === z.id ? 'text-slate-800' : 'text-slate-400'}">${z.name}</div>
+                    <div class="text-[10px] font-bold opacity-60 mt-1">${z.crop}</div>
+                </button>
+            `).join('');
+        }
+
+        function setZone(id) {
+            selectedZoneId = id;
+            renderZones();
+            updateSensorView();
+        }
+
+        function updateSensorView() {
+            const zone = ZONES.find(z => z.id === selectedZoneId);
+            const data = sensorState[selectedZoneId];
+            
+            document.getElementById('active-zone-name').innerText = zone.name;
+            document.getElementById('active-zone-crop').innerText = zone.crop;
+
+            // Render Sensor Cards
+            document.getElementById('sensors-grid').innerHTML = SENSOR_CONFIG.map(config => {
+                const val = data[config.id];
+                const isCrit = (config.id === 'soil' && val < zone.thresholds.soil) || (config.id === 'temp' && val > zone.thresholds.temp);
+                const progress = Math.min(100, (config.id === 'light' ? val / 2000 : val / 100) * 100);
+
+                return `
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 ${config.bg} ${config.color} rounded-2xl flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${config.icon}</svg>
+                            </div>
+                            ${isCrit ? '<span class="flex h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>' : ''}
+                        </div>
+                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">${config.label}</div>
+                        <div class="flex items-baseline gap-1 mb-4">
+                            <span class="text-3xl font-black ${isCrit ? 'text-rose-600' : 'text-slate-800'} tracking-tighter">${val.toFixed(1)}</span>
+                            <span class="text-sm font-bold text-slate-400">${config.unit}</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden">
+                            <div class="h-full transition-all duration-1000 ${isCrit ? 'bg-rose-500' : 'bg-emerald-500'}" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Ranges
+            document.getElementById('range-list').innerHTML = [
+                { label: 'Soil Tension', target: zone.thresholds.soil, val: data.soil },
+                { label: 'Thermal Load', target: zone.thresholds.temp, val: data.temp }
+            ].map(r => `
+                <div>
+                    <div class="flex justify-between text-[10px] font-black mb-3">
+                        <span class="text-slate-400 uppercase tracking-[0.1em]">${r.label}</span>
+                        <span class="text-slate-800">LIMIT: ${r.target}${r.label.includes('Soil') ? '%' : '°C'}</span>
+                    </div>
+                    <div class="h-2 bg-slate-50 rounded-full relative">
+                        <div class="absolute h-full bg-emerald-500 rounded-full transition-all duration-1000" style="width: ${Math.min(100, r.val)}%"></div>
+                        <div class="absolute h-4 w-1 bg-slate-900 top-1/2 -translate-y-1/2" style="left: ${r.target}%"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Edge Actions
+            const irriStatus = document.getElementById('irrigation-status');
+            const irriIndicator = document.getElementById('irrigation-indicator');
+            if(data.soil < zone.thresholds.soil) {
+                irriStatus.innerText = 'ACTIVE (PUMP-1)';
+                irriIndicator.className = 'h-2.5 w-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]';
+                document.getElementById('alert-banner').classList.remove('hidden');
+                document.getElementById('alert-msg').innerText = `Critical: Soil moisture in ${zone.name} dropped to ${data.soil.toFixed(1)}%. Irrigation pump engaged.`;
+            } else {
+                irriStatus.innerText = 'STANDBY';
+                irriIndicator.className = 'h-2.5 w-2.5 rounded-full bg-slate-700';
+                document.getElementById('alert-banner').classList.add('hidden');
+            }
+        }
+
+        function startLoops() {
+            setInterval(() => {
+                const timeStr = new Date().toLocaleTimeString();
+                document.getElementById('system-time').innerText = timeStr;
+
+                if (!isSimulating) return;
+
+                Object.keys(sensorState).forEach(id => {
+                    sensorState[id].soil += (Math.random() - 0.58) * 0.8; // Drifts down
+                    sensorState[id].temp += (Math.random() - 0.5) * 0.1;
+                    sensorState[id].soil = Math.max(15, Math.min(85, sensorState[id].soil));
+                });
+
+                if(activeTab === 'sensors') updateSensorView();
+            }, 3000);
+        }
+
+        // --- HEALTH SCAN LOGIC ---
+        function startCamera() {
+            const video = document.getElementById('video');
+            const placeholder = document.getElementById('cam-placeholder');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(s => {
+                    video.srcObject = s;
+                    video.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                })
+                .catch(() => {
+                    placeholder.innerText = "Simulated Lens Active";
+                    video.classList.remove('hidden');
+                    video.poster = "https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&q=80&w=800";
+                });
+        }
+
+        function scanImage() {
+            const result = document.getElementById('scan-result');
+            result.classList.remove('hidden');
+            result.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- INSIGHTS LOGIC ---
+        function generateInsights() {
+            const display = document.getElementById('insight-display');
+            display.innerHTML = '<div class="flex flex-col items-center gap-4"><div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent animate-spin rounded-full"></div><p class="font-bold text-slate-800">Processing Satellite & Sensor Data...</p></div>';
+            
+            setTimeout(() => {
+                display.innerHTML = `
+                    <div id="pdf-report" class="text-left w-full space-y-6">
+                        <div class="border-b pb-4 flex justify-between items-center">
+                            <h4 class="text-xl font-black text-slate-800 uppercase">Cultivation Strategy Report</h4>
+                            <button onclick="downloadPDF()" class="text-[10px] font-black bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl">SAVE PDF</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 bg-emerald-50 rounded-2xl">
+                                <p class="text-[10px] font-black text-emerald-600 mb-1">YIELD PROJECTION</p>
+                                <p class="text-2xl font-black">+18.4%</p>
+                            </div>
+                            <div class="p-4 bg-blue-50 rounded-2xl">
+                                <p class="text-[10px] font-black text-blue-600 mb-1">WATER SAVINGS</p>
+                                <p class="text-2xl font-black">2,400L</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-xs font-bold text-slate-800">Primary Recommendation:</p>
+                            <p class="text-sm text-slate-500 leading-relaxed">Based on current solar radiance and soil tension in **North Field A**, initiate potassium-rich nutrient injection at 04:00 AM tomorrow to maximize cell wall strength before the 32°C heat peak.</p>
+                        </div>
+                    </div>
+                `;
+            }, 1500);
+        }
+
+        // --- CHAT LOGIC ---
+        function sendMsg() {
+            const input = document.getElementById('chat-input');
+            const win = document.getElementById('chat-window');
+            if(!input.value.trim()) return;
+
+            win.innerHTML += `<div class="bg-slate-100 self-end p-5 rounded-3xl rounded-tr-none max-w-[85%] text-sm font-bold text-slate-800 ml-auto shadow-sm">${input.value}</div>`;
+            
+            const prompt = input.value.toLowerCase();
+            input.value = '';
+
+            setTimeout(() => {
+                let response = "I'm analyzing that for your current configuration. Have you checked the latest PAR (light) levels? They seem slightly high for tomato growth.";
+                if(prompt.includes('soil') || prompt.includes('water')) {
+                    const moisture = sensorState[selectedZoneId].soil.toFixed(1);
+                    response = `In **${selectedZoneId}**, your soil moisture is currently **${moisture}%**. My recommendation is to hold off irrigation until it hits 40% for optimal root depth.`;
+                }
+                win.innerHTML += `<div class="bg-emerald-600 text-white self-start p-5 rounded-3xl rounded-tl-none max-w-[85%] text-sm font-medium shadow-lg">${response}</div>`;
+                win.scrollTop = win.scrollHeight;
+            }, 800);
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('pdf-report');
+            html2pdf().from(element).save('AgroSense_Precision_Report.pdf');
+        }
+
+        // --- EVENTS ---
+        document.getElementById('toggle-sim').addEventListener('click', () => {
+            isSimulating = !isSimulating;
+            document.getElementById('sim-status').innerText = isSimulating ? 'LIVE SENSORS' : 'DATA PAUSED';
+            document.getElementById('refresh-icon').classList.toggle('animate-spin');
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
 </body>
 </html>

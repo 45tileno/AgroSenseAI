@@ -12,6 +12,9 @@
 - [ ] Establish clear primary/secondary actions, readable field labels, focus states, and calmer result panels.
 - [ ] Make live status, farm health, and metric cards scan-friendly and semantically color-coded.
 
+## Add field analytics
+- [x] Add a seven-day trend chart to the Field Operations Console with selectable soil moisture, ambient temperature, and light metrics, live selected-zone context, current/average/target readouts, and an operational takeaway.
+
 ## Verify and deliver
 - [ ] Build the existing static project successfully.
 - [ ] Add and verify the single-page route manifest.

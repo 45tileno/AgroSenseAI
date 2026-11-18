@@ -137,6 +137,43 @@
             #farmer-dashboard .flex.border-b button { flex: 1 0 auto; }
         }
     </style>
+
+    <style id="analytics-style">
+        .analytics-panel { margin-top: 8px; padding: 26px; background: rgba(255,255,255,.82); border: 1px solid #e5ebe5; border-radius: 28px; box-shadow: 0 12px 34px rgba(21,55,40,.06); }
+        .analytics-header { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; }
+        .analytics-eyebrow { margin:0 0 7px; color:#1b5a42; font-size:10px; font-weight:900; letter-spacing:.18em; }
+        .analytics-header h3 { margin:0; color:#17231f; font-size:20px; font-weight:900; letter-spacing:-.04em; }
+        .analytics-description { margin:6px 0 0; color:#718078; font-size:12px; }
+        .analytics-zone { display:flex; align-items:center; gap:8px; padding:10px 12px; color:#1b5a42; background:#eff7ed; border:1px solid #dcebd9; border-radius:12px; font-size:12px; font-weight:800; white-space:nowrap; }
+        .analytics-zone small { color:#6fa05d; font-size:9px; letter-spacing:.12em; }
+        .analytics-live-dot { width:7px; height:7px; border-radius:50%; background:#6fbd50; box-shadow:0 0 0 4px rgba(111,189,80,.16); }
+        .analytics-toolbar { display:flex; gap:6px; margin:22px 0 18px; padding:4px; width:max-content; max-width:100%; overflow:auto; background:#f2f5f0; border-radius:12px; }
+        .analytics-metric { border:0; border-radius:9px; padding:9px 12px; color:#718078; background:transparent; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; transition:all .18s ease; }
+        .analytics-metric:hover { color:#1b5a42; background:#fff; }
+        .analytics-metric.is-active { color:#fff; background:#1b5a42; box-shadow:0 4px 10px rgba(27,90,66,.18); }
+        .analytics-content { display:grid; grid-template-columns:minmax(0, 1fr) 220px; gap:24px; align-items:stretch; }
+        .analytics-chart-wrap { min-width:0; padding:12px 14px 0; border:1px solid #edf1ec; border-radius:18px; background:#fbfcf8; }
+        .analytics-chart { display:block; width:100%; height:auto; min-height:220px; overflow:visible; }
+        .analytics-grid-line { stroke:#e5ebe5; stroke-width:1; stroke-dasharray:3 5; }
+        .analytics-area { fill:url(#analytics-area-gradient); opacity:.65; }
+        .analytics-line { fill:none; stroke:#1b5a42; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+        .analytics-point { fill:#b7e34a; stroke:#1b5a42; stroke-width:2; }
+        .analytics-target-line { stroke:#e6a23c; stroke-width:1.5; stroke-dasharray:5 5; }
+        .analytics-label { fill:#9aa9a0; font:700 10px Inter, sans-serif; }
+        .analytics-days { display:flex; justify-content:space-between; gap:8px; padding:3px 4px 13px; color:#9aa9a0; font-size:9px; font-weight:800; }
+        .analytics-summary { display:flex; flex-direction:column; justify-content:center; padding:18px; border-radius:18px; background:#123d31; color:#fff; }
+        .analytics-summary-label { margin:0 0 10px; color:#b7e34a; font-size:10px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+        .analytics-current { display:flex; align-items:baseline; gap:5px; margin-bottom:20px; }
+        .analytics-current span { font-size:36px; font-weight:900; letter-spacing:-.08em; }
+        .analytics-current small { color:rgba(255,255,255,.62); font-size:13px; font-weight:800; }
+        .analytics-summary-row { display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-top:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.6); font-size:10px; }
+        .analytics-summary-row strong { color:#fff; font-size:11px; }
+        .analytics-takeaway { display:flex; gap:9px; margin-top:14px; padding:11px; color:#dcebd9; background:rgba(255,255,255,.08); border-radius:12px; }
+        .analytics-takeaway-icon { display:grid; place-items:center; flex:none; width:20px; height:20px; color:#123d31; background:#b7e34a; border-radius:7px; font-weight:900; }
+        .analytics-takeaway p { margin:0; font-size:10px; line-height:1.45; }
+        @media (max-width: 860px) { .analytics-content { grid-template-columns:1fr; } .analytics-summary { min-height:0; } }
+        @media (max-width: 600px) { .analytics-panel { padding:18px; border-radius:22px; } .analytics-header { flex-direction:column; } .analytics-zone { align-self:flex-start; } .analytics-chart { min-height:190px; } }
+    </style>
 </head>
 <body class="font-inter min-h-screen flex flex-col bg-gray-900">
     
@@ -2658,6 +2695,35 @@ If the crop appears healthy, state that clearly and provide general care recomme
                         <!-- Sensor Cards Injected here -->
                     </div>
 
+                    <section id="analytics-panel" class="analytics-panel" aria-labelledby="analytics-title">
+                        <div class="analytics-header">
+                            <div>
+                                <p class="analytics-eyebrow">FIELD ANALYTICS / 7-DAY VIEW</p>
+                                <h3 id="analytics-title">Trend intelligence</h3>
+                                <p class="analytics-description">See how the selected zone is moving before it becomes an intervention.</p>
+                            </div>
+                            <div class="analytics-zone"><span class="analytics-live-dot"></span><span id="analytics-zone-name">North Field A</span><small>LIVE</small></div>
+                        </div>
+                        <div class="analytics-toolbar" role="group" aria-label="Select analytics metric">
+                            <button class="analytics-metric is-active" data-analytics-metric="soil" onclick="setAnalyticsMetric('soil')">Soil moisture</button>
+                            <button class="analytics-metric" data-analytics-metric="temp" onclick="setAnalyticsMetric('temp')">Ambient temperature</button>
+                            <button class="analytics-metric" data-analytics-metric="light" onclick="setAnalyticsMetric('light')">Light (PAR)</button>
+                        </div>
+                        <div class="analytics-content">
+                            <div class="analytics-chart-wrap">
+                                <svg id="analytics-chart" class="analytics-chart" viewBox="0 0 640 220" role="img" aria-label="Seven-day field trend chart"></svg>
+                                <div class="analytics-days" aria-hidden="true"><span>6 days ago</span><span>5 days</span><span>4 days</span><span>3 days</span><span>2 days</span><span>Yesterday</span><span>Now</span></div>
+                            </div>
+                            <aside class="analytics-summary">
+                                <p class="analytics-summary-label" id="analytics-metric-label">Soil moisture</p>
+                                <div class="analytics-current"><span id="analytics-current">42.0</span><small id="analytics-unit">%</small></div>
+                                <div class="analytics-summary-row"><span>7-day average</span><strong id="analytics-average">42.0%</strong></div>
+                                <div class="analytics-summary-row"><span>Target limit</span><strong id="analytics-target">40%</strong></div>
+                                <div class="analytics-takeaway"><span class="analytics-takeaway-icon">↗</span><p id="analytics-takeaway">Moisture is holding above the irrigation trigger.</p></div>
+                            </aside>
+                        </div>
+                    </section>
+
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
                             <h3 class="font-black text-lg text-slate-800 mb-8 flex items-center gap-3">
@@ -2829,6 +2895,55 @@ If the crop appears healthy, state that clearly and provide general care recomme
             }
         }
 
+
+        // --- ANALYTICS LOGIC ---
+        const ANALYTICS_METRICS = {
+            soil: { label: 'Soil moisture', unit: '%', color: '#1b5a42', min: 20, max: 70, target: 40, offsets: [-4.8, -2.1, -3.4, 1.2, 3.4, 1.7, 0] },
+            temp: { label: 'Ambient temperature', unit: '°C', color: '#d96c59', min: 16, max: 36, target: 32, offsets: [-1.8, -.9, .4, 1.8, 1.1, .7, 0] },
+            light: { label: 'Light (PAR)', unit: 'lux', color: '#e6a23c', min: 400, max: 1800, target: 1200, offsets: [-180, -90, 40, 120, 80, 140, 0] }
+        };
+        let selectedAnalyticsMetric = 'soil';
+
+        function setAnalyticsMetric(metric) {
+            selectedAnalyticsMetric = metric;
+            document.querySelectorAll('[data-analytics-metric]').forEach(button => {
+                button.classList.toggle('is-active', button.dataset.analyticsMetric === metric);
+            });
+            renderAnalytics();
+        }
+
+        function renderAnalytics() {
+            const zone = ZONES.find(z => z.id === selectedZoneId);
+            const data = sensorState[selectedZoneId];
+            const spec = ANALYTICS_METRICS[selectedAnalyticsMetric];
+            const current = data[selectedAnalyticsMetric];
+            const values = spec.offsets.map((offset, index) => Math.max(spec.min, Math.min(spec.max, current + offset + Math.sin(index * 1.7) * (selectedAnalyticsMetric === 'light' ? 18 : .45))));
+            const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+            const width = 640, baseline = 190, top = 18, chartHeight = baseline - top;
+            const points = values.map((value, index) => `${20 + index * 100},${baseline - ((value - spec.min) / (spec.max - spec.min)) * chartHeight}`);
+            const targetY = baseline - ((spec.target - spec.min) / (spec.max - spec.min)) * chartHeight;
+            const areaPath = `M ${points[0]} L ${points.join(' L ')} L 620 ${baseline} L 20 ${baseline} Z`;
+            const linePath = `M ${points.join(' L ')}`;
+            const pointMarkup = points.map(point => `<circle class="analytics-point" cx="${point.split(',')[0]}" cy="${point.split(',')[1]}" r="4"/>`).join('');
+            document.getElementById('analytics-chart').innerHTML = `
+                <defs><linearGradient id="analytics-area-gradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="${spec.color}" stop-opacity=".28"/><stop offset="100%" stop-color="${spec.color}" stop-opacity="0"/></linearGradient></defs>
+                <line class="analytics-grid-line" x1="20" x2="620" y1="18" y2="18"/><line class="analytics-grid-line" x1="20" x2="620" y1="75" y2="75"/><line class="analytics-grid-line" x1="20" x2="620" y1="132" y2="132"/><line class="analytics-grid-line" x1="20" x2="620" y1="190" y2="190"/>
+                <line class="analytics-target-line" x1="20" x2="620" y1="${targetY}" y2="${targetY}"/><text class="analytics-label" x="535" y="${Math.max(12, targetY - 7)}">TARGET ${spec.target}${spec.unit}</text>
+                <path class="analytics-area" d="${areaPath}" style="fill:url(#analytics-area-gradient)"/><path class="analytics-line" d="${linePath}" style="stroke:${spec.color}"/>${pointMarkup}
+            `;
+            document.getElementById('analytics-zone-name').innerText = zone.name;
+            document.getElementById('analytics-metric-label').innerText = spec.label;
+            document.getElementById('analytics-current').innerText = current.toFixed(1);
+            document.getElementById('analytics-unit').innerText = spec.unit;
+            document.getElementById('analytics-average').innerText = `${average.toFixed(1)}${spec.unit}`;
+            document.getElementById('analytics-target').innerText = `${spec.target}${spec.unit}`;
+            let takeaway = `${spec.label} is tracking close to the selected zone’s target.`;
+            if (selectedAnalyticsMetric === 'soil') takeaway = current < zone.thresholds.soil ? 'Moisture is below the irrigation trigger — review pump status.' : 'Moisture is holding above the irrigation trigger.';
+            if (selectedAnalyticsMetric === 'temp') takeaway = current > zone.thresholds.temp ? 'Thermal load is above the zone limit — plan cooling or shade.' : 'Temperature is within the zone’s operating envelope.';
+            if (selectedAnalyticsMetric === 'light') takeaway = current > 1200 ? 'Light exposure is elevated — watch midday stress on tender crops.' : 'Light exposure is steady for the current crop cycle.';
+            document.getElementById('analytics-takeaway').innerText = takeaway;
+        }
+
         // --- SENSOR LOGIC ---
         function renderZones() {
             const container = document.getElementById('zone-container');
@@ -2895,6 +3010,8 @@ If the crop appears healthy, state that clearly and provide general care recomme
                     </div>
                 </div>
             `).join('');
+
+            renderAnalytics();
 
             // Edge Actions
             const irriStatus = document.getElementById('irrigation-status');

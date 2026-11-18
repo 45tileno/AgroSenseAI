@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroSense AI: Smart Farm Assistant</title>
+    <title>AgroSense AI | Farm intelligence, made clear</title>
     <!-- Built Tailwind CSS -->
     <link rel="stylesheet" href="dist/output.css">
         <link rel="icon" href="AgroSence Logo.png" type="image/jpeg">
@@ -43,6 +43,100 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style id="agrosense-redesign">
+        :root {
+            --ink: #17231f;
+            --pine: #123d31;
+            --pine-2: #1b5a42;
+            --fog: #f2f5f0;
+            --paper: #fbfcf8;
+            --line: #dfe7df;
+            --muted: #718078;
+            --lime: #b7e34a;
+            --amber: #e6a23c;
+            --coral: #d96c59;
+            --shadow: 0 18px 50px rgba(21, 55, 40, .10);
+        }
+        html { background: var(--fog); }
+        body.font-inter {
+            background: var(--fog) !important;
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        }
+        #bg-slider, body > .fixed.bg-black\/20 { display: none !important; }
+        body > header, header.relative {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            min-height: 76px;
+            padding: 14px clamp(18px, 4vw, 64px) !important;
+            background: rgba(18, 61, 49, .97) !important;
+            border: 0 !important;
+            border-bottom: 1px solid rgba(183, 227, 74, .18) !important;
+            border-radius: 0 !important;
+            box-shadow: 0 8px 24px rgba(11, 39, 30, .18) !important;
+        }
+        .brand-lockup { display: flex; align-items: center; gap: 12px; color: #fff; margin: 0; font-size: 1.22rem; letter-spacing: -.03em; }
+        .brand-lockup strong { font-weight: 750; }
+        .brand-lockup em { color: var(--lime); font-style: normal; }
+        .brand-lockup small { display: block; color: rgba(255,255,255,.58); font-size: .52rem; letter-spacing: .19em; margin-top: 2px; font-weight: 700; }
+        .brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; color: var(--pine); background: var(--lime); font-size: 1.2rem; box-shadow: 0 0 0 4px rgba(183,227,74,.12); }
+        #auth-status { gap: 14px !important; }
+        #welcome-message { color: rgba(255,255,255,.75) !important; font-size: .78rem !important; }
+        #logout-button { border: 1px solid rgba(255,255,255,.24) !important; background: rgba(255,255,255,.08) !important; border-radius: 10px !important; box-shadow: none !important; transform: none !important; font-size: .78rem; }
+        #logout-button:hover { background: rgba(183,227,74,.18) !important; border-color: rgba(183,227,74,.5) !important; }
+        main.relative.z-10 { max-width: 1440px !important; padding: clamp(20px, 4vw, 48px) !important; }
+        #farmer-dashboard { background: transparent !important; border: 0 !important; box-shadow: none !important; overflow: visible !important; }
+        #farmer-dashboard > .p-6 { padding: 0 !important; }
+        .dashboard-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 28px; }
+        .eyebrow { color: var(--pine-2); font-size: .68rem; font-weight: 800; letter-spacing: .18em; margin-bottom: 8px; }
+        .dashboard-heading h2 { color: var(--ink); letter-spacing: -.05em; }
+        .dashboard-subtitle { color: var(--muted); font-size: .94rem; max-width: 520px; }
+        .status-chip { display: flex; align-items: center; gap: 8px; padding: 10px 13px; background: var(--paper); color: var(--pine-2); border: 1px solid var(--line); border-radius: 12px; font-size: .75rem; font-weight: 750; white-space: nowrap; box-shadow: 0 4px 12px rgba(21,55,40,.04); }
+        .status-chip small { color: var(--muted); font-weight: 500; margin-left: 3px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 99px; background: #6fbd50; box-shadow: 0 0 0 4px rgba(111,189,80,.16); }
+        #dashboard-stats { gap: 12px !important; margin-bottom: 26px !important; }
+        #dashboard-stats > div { min-height: 104px; padding: 18px 20px !important; border: 1px solid var(--line) !important; border-radius: 14px !important; background: var(--paper) !important; box-shadow: 0 5px 16px rgba(21,55,40,.045) !important; position: relative; overflow: hidden; }
+        #dashboard-stats > div:before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--pine-2); }
+        #dashboard-stats > div:nth-child(2):before { background: #67a6d5; }
+        #dashboard-stats > div:nth-child(3):before { background: var(--amber); }
+        #dashboard-stats > div:nth-child(4):before { background: var(--lime); }
+        #dashboard-stats p:first-child { color: var(--muted) !important; font-size: .72rem !important; text-transform: uppercase; letter-spacing: .09em; }
+        #dashboard-stats p:nth-child(2) { color: var(--ink) !important; font-size: 1.8rem !important; letter-spacing: -.06em; }
+        #dashboard-stats span { opacity: .72; filter: grayscale(.35); }
+        #farmer-dashboard .flex.border-b { border: 1px solid var(--line) !important; background: var(--paper); border-radius: 14px !important; padding: 6px !important; margin-bottom: 22px !important; gap: 4px; overflow-x: auto; scrollbar-width: none; box-shadow: 0 5px 16px rgba(21,55,40,.04); }
+        #farmer-dashboard .flex.border-b::-webkit-scrollbar { display: none; }
+        #farmer-dashboard .flex.border-b button { margin: 0 !important; padding: 11px 14px !important; border: 0 !important; border-radius: 9px !important; color: var(--muted) !important; font-size: .76rem !important; font-weight: 750 !important; letter-spacing: .01em; }
+        #farmer-dashboard .flex.border-b button:hover { color: var(--pine-2) !important; background: #edf4ed; }
+        #farmer-dashboard .flex.border-b button.text-emerald-600 { color: var(--paper) !important; background: var(--pine-2) !important; box-shadow: 0 4px 10px rgba(27,90,66,.18); }
+        .glass-panel, .glass-panel-dark, #tab-content-get-recommendations .bg-white\/80, #tab-content-disease-detection .bg-white\/80 { background: var(--paper) !important; border: 1px solid var(--line) !important; border-radius: 16px !important; box-shadow: var(--shadow) !important; backdrop-filter: none !important; }
+        .glass-panel-dark { background: #edf5ec !important; box-shadow: none !important; }
+        #tab-content-get-recommendations .grid, #tab-content-disease-detection .grid, #tab-content-reminders .grid { gap: 18px !important; }
+        #tab-content-get-recommendations .glass-panel-dark, #tab-content-disease-detection .glass-panel-dark, #tab-content-reminders .glass-panel-dark { padding: 24px !important; }
+        #tab-content-get-recommendations h3, #tab-content-disease-detection h3, #tab-content-reminders h3 { color: var(--pine) !important; letter-spacing: -.025em; }
+        label { color: var(--ink) !important; font-size: .74rem !important; letter-spacing: .02em; }
+        select, input, textarea { min-height: 42px; color: var(--ink) !important; background: #fff !important; border: 1px solid #d4ded5 !important; border-radius: 9px !important; box-shadow: none !important; }
+        select:focus, input:focus, textarea:focus { border-color: var(--pine-2) !important; box-shadow: 0 0 0 3px rgba(27,90,66,.12) !important; }
+        #generate-recommendations-button { background: var(--pine-2) !important; border-radius: 10px !important; box-shadow: 0 8px 18px rgba(27,90,66,.18) !important; transform: none !important; }
+        #generate-recommendations-button:hover { background: var(--pine) !important; }
+        #tab-content-get-recommendations .bg-white\/80, #tab-content-disease-detection .bg-white\/80 { min-height: 100% !important; }
+        #ai-placeholder-message, #disease-placeholder-message { color: var(--muted) !important; }
+        #ai-placeholder-message svg, #disease-placeholder-message svg { color: var(--pine-2); opacity: .7 !important; }
+        @media (max-width: 720px) {
+            body > header, header.relative { min-height: 68px; padding: 12px 16px !important; }
+            .brand-lockup { font-size: 1.05rem; }
+            .brand-lockup small { font-size: .45rem; }
+            #welcome-message { display: none !important; }
+            main.relative.z-10 { padding: 20px 14px !important; }
+            .dashboard-heading { align-items: start; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+            .status-chip { width: 100%; justify-content: flex-start; }
+            #dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+            #dashboard-stats > div { min-height: 92px; padding: 14px !important; }
+            #dashboard-stats p:nth-child(2) { font-size: 1.5rem !important; }
+            #farmer-dashboard .flex.border-b button { flex: 1 0 auto; }
+        }
+    </style>
 </head>
 <body class="font-inter min-h-screen flex flex-col bg-gray-900">
     
@@ -56,8 +150,9 @@
 
     <!-- Header Section -->
     <header class="relative z-10 bg-gradient-to-r from-green-800/90 to-emerald-700/90 backdrop-blur-md p-4 shadow-lg flex justify-between items-center rounded-b-lg border-b border-white/20">
-        <h1 class="text-white text-2xl md:text-3xl font-bold flex items-center gap-2 drop-shadow-sm">
-            🌱 AgroSense AI
+        <h1 class="brand-lockup">
+            <span class="brand-mark" aria-hidden="true">✦</span>
+            <span><strong>AgroSense</strong> <em>AI</em><small>FIELD INTELLIGENCE</small></span>
         </h1>
         <nav>
             <div id="auth-status" class="flex items-center space-x-4">
@@ -163,7 +258,14 @@
         <!-- Farmer Dashboard -->
         <section id="farmer-dashboard" class="hidden container mx-auto glass-panel rounded-xl shadow-2xl border border-white/60 overflow-hidden">
             <div class="p-6 md:p-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Farm Dashboard</h2>
+                <div class="dashboard-heading">
+                    <div>
+                        <p class="eyebrow">OPERATIONS / NAIROBI REGION</p>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Farm Dashboard</h2>
+                        <p class="dashboard-subtitle">Know what changed overnight. Turn today’s conditions into the next best action.</p>
+                    </div>
+                    <div class="status-chip"><span class="status-dot"></span> Systems healthy <small>Updated just now</small></div>
+                </div>
 
                 <!-- Dashboard Stats Cards -->
                 <div id="dashboard-stats" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -2365,6 +2467,100 @@ If the crop appears healthy, state that clearly and provide general care recomme
             background-size: cover; background-position: center; background-attachment: fixed;
         }
         .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+
+    <style id="agrosense-redesign">
+        :root {
+            --ink: #17231f;
+            --pine: #123d31;
+            --pine-2: #1b5a42;
+            --fog: #f2f5f0;
+            --paper: #fbfcf8;
+            --line: #dfe7df;
+            --muted: #718078;
+            --lime: #b7e34a;
+            --amber: #e6a23c;
+            --coral: #d96c59;
+            --shadow: 0 18px 50px rgba(21, 55, 40, .10);
+        }
+        html { background: var(--fog); }
+        body.font-inter {
+            background: var(--fog) !important;
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        }
+        #bg-slider, body > .fixed.bg-black\/20 { display: none !important; }
+        body > header, header.relative {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            min-height: 76px;
+            padding: 14px clamp(18px, 4vw, 64px) !important;
+            background: rgba(18, 61, 49, .97) !important;
+            border: 0 !important;
+            border-bottom: 1px solid rgba(183, 227, 74, .18) !important;
+            border-radius: 0 !important;
+            box-shadow: 0 8px 24px rgba(11, 39, 30, .18) !important;
+        }
+        .brand-lockup { display: flex; align-items: center; gap: 12px; color: #fff; margin: 0; font-size: 1.22rem; letter-spacing: -.03em; }
+        .brand-lockup strong { font-weight: 750; }
+        .brand-lockup em { color: var(--lime); font-style: normal; }
+        .brand-lockup small { display: block; color: rgba(255,255,255,.58); font-size: .52rem; letter-spacing: .19em; margin-top: 2px; font-weight: 700; }
+        .brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; color: var(--pine); background: var(--lime); font-size: 1.2rem; box-shadow: 0 0 0 4px rgba(183,227,74,.12); }
+        #auth-status { gap: 14px !important; }
+        #welcome-message { color: rgba(255,255,255,.75) !important; font-size: .78rem !important; }
+        #logout-button { border: 1px solid rgba(255,255,255,.24) !important; background: rgba(255,255,255,.08) !important; border-radius: 10px !important; box-shadow: none !important; transform: none !important; font-size: .78rem; }
+        #logout-button:hover { background: rgba(183,227,74,.18) !important; border-color: rgba(183,227,74,.5) !important; }
+        main.relative.z-10 { max-width: 1440px !important; padding: clamp(20px, 4vw, 48px) !important; }
+        #farmer-dashboard { background: transparent !important; border: 0 !important; box-shadow: none !important; overflow: visible !important; }
+        #farmer-dashboard > .p-6 { padding: 0 !important; }
+        .dashboard-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 28px; }
+        .eyebrow { color: var(--pine-2); font-size: .68rem; font-weight: 800; letter-spacing: .18em; margin-bottom: 8px; }
+        .dashboard-heading h2 { color: var(--ink); letter-spacing: -.05em; }
+        .dashboard-subtitle { color: var(--muted); font-size: .94rem; max-width: 520px; }
+        .status-chip { display: flex; align-items: center; gap: 8px; padding: 10px 13px; background: var(--paper); color: var(--pine-2); border: 1px solid var(--line); border-radius: 12px; font-size: .75rem; font-weight: 750; white-space: nowrap; box-shadow: 0 4px 12px rgba(21,55,40,.04); }
+        .status-chip small { color: var(--muted); font-weight: 500; margin-left: 3px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 99px; background: #6fbd50; box-shadow: 0 0 0 4px rgba(111,189,80,.16); }
+        #dashboard-stats { gap: 12px !important; margin-bottom: 26px !important; }
+        #dashboard-stats > div { min-height: 104px; padding: 18px 20px !important; border: 1px solid var(--line) !important; border-radius: 14px !important; background: var(--paper) !important; box-shadow: 0 5px 16px rgba(21,55,40,.045) !important; position: relative; overflow: hidden; }
+        #dashboard-stats > div:before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--pine-2); }
+        #dashboard-stats > div:nth-child(2):before { background: #67a6d5; }
+        #dashboard-stats > div:nth-child(3):before { background: var(--amber); }
+        #dashboard-stats > div:nth-child(4):before { background: var(--lime); }
+        #dashboard-stats p:first-child { color: var(--muted) !important; font-size: .72rem !important; text-transform: uppercase; letter-spacing: .09em; }
+        #dashboard-stats p:nth-child(2) { color: var(--ink) !important; font-size: 1.8rem !important; letter-spacing: -.06em; }
+        #dashboard-stats span { opacity: .72; filter: grayscale(.35); }
+        #farmer-dashboard .flex.border-b { border: 1px solid var(--line) !important; background: var(--paper); border-radius: 14px !important; padding: 6px !important; margin-bottom: 22px !important; gap: 4px; overflow-x: auto; scrollbar-width: none; box-shadow: 0 5px 16px rgba(21,55,40,.04); }
+        #farmer-dashboard .flex.border-b::-webkit-scrollbar { display: none; }
+        #farmer-dashboard .flex.border-b button { margin: 0 !important; padding: 11px 14px !important; border: 0 !important; border-radius: 9px !important; color: var(--muted) !important; font-size: .76rem !important; font-weight: 750 !important; letter-spacing: .01em; }
+        #farmer-dashboard .flex.border-b button:hover { color: var(--pine-2) !important; background: #edf4ed; }
+        #farmer-dashboard .flex.border-b button.text-emerald-600 { color: var(--paper) !important; background: var(--pine-2) !important; box-shadow: 0 4px 10px rgba(27,90,66,.18); }
+        .glass-panel, .glass-panel-dark, #tab-content-get-recommendations .bg-white\/80, #tab-content-disease-detection .bg-white\/80 { background: var(--paper) !important; border: 1px solid var(--line) !important; border-radius: 16px !important; box-shadow: var(--shadow) !important; backdrop-filter: none !important; }
+        .glass-panel-dark { background: #edf5ec !important; box-shadow: none !important; }
+        #tab-content-get-recommendations .grid, #tab-content-disease-detection .grid, #tab-content-reminders .grid { gap: 18px !important; }
+        #tab-content-get-recommendations .glass-panel-dark, #tab-content-disease-detection .glass-panel-dark, #tab-content-reminders .glass-panel-dark { padding: 24px !important; }
+        #tab-content-get-recommendations h3, #tab-content-disease-detection h3, #tab-content-reminders h3 { color: var(--pine) !important; letter-spacing: -.025em; }
+        label { color: var(--ink) !important; font-size: .74rem !important; letter-spacing: .02em; }
+        select, input, textarea { min-height: 42px; color: var(--ink) !important; background: #fff !important; border: 1px solid #d4ded5 !important; border-radius: 9px !important; box-shadow: none !important; }
+        select:focus, input:focus, textarea:focus { border-color: var(--pine-2) !important; box-shadow: 0 0 0 3px rgba(27,90,66,.12) !important; }
+        #generate-recommendations-button { background: var(--pine-2) !important; border-radius: 10px !important; box-shadow: 0 8px 18px rgba(27,90,66,.18) !important; transform: none !important; }
+        #generate-recommendations-button:hover { background: var(--pine) !important; }
+        #tab-content-get-recommendations .bg-white\/80, #tab-content-disease-detection .bg-white\/80 { min-height: 100% !important; }
+        #ai-placeholder-message, #disease-placeholder-message { color: var(--muted) !important; }
+        #ai-placeholder-message svg, #disease-placeholder-message svg { color: var(--pine-2); opacity: .7 !important; }
+        @media (max-width: 720px) {
+            body > header, header.relative { min-height: 68px; padding: 12px 16px !important; }
+            .brand-lockup { font-size: 1.05rem; }
+            .brand-lockup small { font-size: .45rem; }
+            #welcome-message { display: none !important; }
+            main.relative.z-10 { padding: 20px 14px !important; }
+            .dashboard-heading { align-items: start; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+            .status-chip { width: 100%; justify-content: flex-start; }
+            #dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+            #dashboard-stats > div { min-height: 92px; padding: 14px !important; }
+            #dashboard-stats p:nth-child(2) { font-size: 1.5rem !important; }
+            #farmer-dashboard .flex.border-b button { flex: 1 0 auto; }
+        }
     </style>
 </head>
 <body class="bg-farm min-h-screen text-slate-900 overflow-x-hidden">

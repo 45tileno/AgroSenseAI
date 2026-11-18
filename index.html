@@ -173,6 +173,35 @@
         .analytics-takeaway p { margin:0; font-size:10px; line-height:1.45; }
         @media (max-width: 860px) { .analytics-content { grid-template-columns:1fr; } .analytics-summary { min-height:0; } }
         @media (max-width: 600px) { .analytics-panel { padding:18px; border-radius:22px; } .analytics-header { flex-direction:column; } .analytics-zone { align-self:flex-start; } .analytics-chart { min-height:190px; } }
+
+        .analytics-actions { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+        .analytics-export-actions { display:flex; gap:6px; }
+        .analytics-export, .analytics-alert-action, .analytics-compare-toggle { border:1px solid #dce7dc; border-radius:9px; padding:7px 10px; color:#1b5a42; background:#fff; font-size:10px; font-weight:900; letter-spacing:.08em; cursor:pointer; transition:all .18s ease; }
+        .analytics-export:hover, .analytics-alert-action:hover, .analytics-compare-toggle:hover { color:#fff; background:#1b5a42; border-color:#1b5a42; }
+        .analytics-compare-toggle { margin-left:4px; color:#718078; background:#fff; }
+        .analytics-compare-toggle.is-active { color:#fff; background:#123d31; border-color:#123d31; }
+        .analytics-alert { display:flex; align-items:center; gap:11px; margin:0 0 18px; padding:12px 14px; color:#7b3e2c; background:#fff4ec; border:1px solid #f5d1bd; border-radius:13px; }
+        .analytics-alert-icon { display:grid; place-items:center; flex:none; width:22px; height:22px; color:#fff; background:#d96c59; border-radius:8px; font-size:12px; font-weight:900; }
+        .analytics-alert strong { display:block; font-size:11px; }
+        .analytics-alert p { margin:2px 0 0; font-size:10px; }
+        .analytics-alert-action { margin-left:auto; color:#a4503d; border-color:#eabda9; background:transparent; white-space:nowrap; }
+        .analytics-comparison { margin-top:22px; padding:22px; border:1px solid #e5ebe5; border-radius:20px; background:#fbfcf8; }
+        .comparison-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px; }
+        .comparison-header h4 { margin:0; color:#17231f; font-size:16px; font-weight:900; letter-spacing:-.03em; }
+        .comparison-zone-picker { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:5px; }
+        .comparison-zone-button { border:1px solid #dce7dc; border-radius:999px; padding:7px 10px; color:#718078; background:#fff; font-size:10px; font-weight:800; cursor:pointer; }
+        .comparison-zone-button.is-selected { color:#fff; background:#1b5a42; border-color:#1b5a42; }
+        .comparison-cards { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; }
+        .comparison-card { padding:14px; border:1px solid #e5ebe5; border-radius:14px; background:#fff; }
+        .comparison-card.is-low { border-color:#efc3b4; background:#fff9f6; }
+        .comparison-card h5 { margin:0 0 4px; color:#17231f; font-size:11px; font-weight:900; }
+        .comparison-card p { margin:0 0 12px; color:#9aa9a0; font-size:9px; font-weight:700; }
+        .comparison-value { display:flex; justify-content:space-between; align-items:baseline; color:#1b5a42; font-size:21px; font-weight:900; letter-spacing:-.06em; }
+        .comparison-value small { color:#718078; font-size:10px; letter-spacing:0; }
+        .comparison-meter { height:6px; margin-top:12px; overflow:hidden; border-radius:99px; background:#edf2ed; }
+        .comparison-meter span { display:block; height:100%; border-radius:99px; background:#b7e34a; }
+        .comparison-card.is-low .comparison-meter span { background:#d96c59; }
+        @media (max-width: 720px) { .analytics-actions { align-items:flex-start; width:100%; } .analytics-export-actions { width:100%; } .analytics-export { flex:1; } .comparison-header { flex-direction:column; } .comparison-zone-picker { justify-content:flex-start; } .comparison-cards { grid-template-columns:1fr; } }
     </style>
 </head>
 <body class="font-inter min-h-screen flex flex-col bg-gray-900">
@@ -2702,12 +2731,24 @@ If the crop appears healthy, state that clearly and provide general care recomme
                                 <h3 id="analytics-title">Trend intelligence</h3>
                                 <p class="analytics-description">See how the selected zone is moving before it becomes an intervention.</p>
                             </div>
-                            <div class="analytics-zone"><span class="analytics-live-dot"></span><span id="analytics-zone-name">North Field A</span><small>LIVE</small></div>
+                            <div class="analytics-actions">
+                                <div class="analytics-zone"><span class="analytics-live-dot"></span><span id="analytics-zone-name">North Field A</span><small>LIVE</small></div>
+                                <div class="analytics-export-actions" role="group" aria-label="Export analytics report">
+                                    <button class="analytics-export" onclick="exportAnalyticsCSV()" title="Download analytics as CSV">CSV</button>
+                                    <button class="analytics-export" onclick="exportAnalyticsPDF()" title="Download analytics as PDF">PDF</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="analytics-toolbar" role="group" aria-label="Select analytics metric">
                             <button class="analytics-metric is-active" data-analytics-metric="soil" onclick="setAnalyticsMetric('soil')">Soil moisture</button>
                             <button class="analytics-metric" data-analytics-metric="temp" onclick="setAnalyticsMetric('temp')">Ambient temperature</button>
                             <button class="analytics-metric" data-analytics-metric="light" onclick="setAnalyticsMetric('light')">Light (PAR)</button>
+                            <button class="analytics-compare-toggle" onclick="toggleAnalyticsComparison()" aria-expanded="false">Compare fields</button>
+                        </div>
+                        <div id="analytics-alert" class="analytics-alert hidden" role="status" aria-live="polite">
+                            <span class="analytics-alert-icon">!</span>
+                            <div><strong id="analytics-alert-title">Predictive moisture alert</strong><p id="analytics-alert-message">Soil moisture is projected to cross the irrigation trigger.</p></div>
+                            <button class="analytics-alert-action" onclick="enableAnalyticsNotifications()" id="analytics-notification-button">Enable desktop alerts</button>
                         </div>
                         <div class="analytics-content">
                             <div class="analytics-chart-wrap">
@@ -2722,6 +2763,10 @@ If the crop appears healthy, state that clearly and provide general care recomme
                                 <div class="analytics-takeaway"><span class="analytics-takeaway-icon">↗</span><p id="analytics-takeaway">Moisture is holding above the irrigation trigger.</p></div>
                             </aside>
                         </div>
+                        <section id="analytics-comparison" class="analytics-comparison hidden" aria-labelledby="comparison-title">
+                            <div class="comparison-header"><div><p class="analytics-eyebrow">CROSS-FIELD VIEW</p><h4 id="comparison-title">Compare fields side by side</h4></div><div id="comparison-zone-picker" class="comparison-zone-picker" role="group" aria-label="Select fields to compare"></div></div>
+                            <div id="comparison-cards" class="comparison-cards"></div>
+                        </section>
                     </section>
 
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -2903,6 +2948,8 @@ If the crop appears healthy, state that clearly and provide general care recomme
             light: { label: 'Light (PAR)', unit: 'lux', color: '#e6a23c', min: 400, max: 1800, target: 1200, offsets: [-180, -90, 40, 120, 80, 140, 0] }
         };
         let selectedAnalyticsMetric = 'soil';
+        let comparisonZoneIds = new Set(['z1', 'z2', 'z3']);
+        let lastAnalyticsNotification = 0;
 
         function setAnalyticsMetric(metric) {
             selectedAnalyticsMetric = metric;
@@ -2912,12 +2959,98 @@ If the crop appears healthy, state that clearly and provide general care recomme
             renderAnalytics();
         }
 
+        function getAnalyticsValues(metric = selectedAnalyticsMetric, zoneId = selectedZoneId) {
+            const spec = ANALYTICS_METRICS[metric];
+            const current = sensorState[zoneId][metric];
+            return spec.offsets.map((offset, index) => Math.max(spec.min, Math.min(spec.max, current + offset + Math.sin(index * 1.7) * (metric === 'light' ? 18 : .45))));
+        }
+
+        function toggleAnalyticsComparison() {
+            const panel = document.getElementById('analytics-comparison');
+            const button = document.querySelector('.analytics-compare-toggle');
+            const isHidden = panel.classList.toggle('hidden');
+            button.classList.toggle('is-active', !isHidden);
+            button.setAttribute('aria-expanded', String(!isHidden));
+            if (!isHidden) renderAnalyticsComparison();
+        }
+
+        function renderAnalyticsComparison() {
+            const spec = ANALYTICS_METRICS[selectedAnalyticsMetric];
+            const picker = document.getElementById('comparison-zone-picker');
+            const cards = document.getElementById('comparison-cards');
+            picker.innerHTML = ZONES.map(zone => `<button class="comparison-zone-button ${comparisonZoneIds.has(zone.id) ? 'is-selected' : ''}" data-comparison-zone="${zone.id}" onclick="toggleComparisonZone('${zone.id}')">${zone.name}</button>`).join('');
+            const selected = Array.from(comparisonZoneIds);
+            cards.innerHTML = selected.map(zoneId => {
+                const zone = ZONES.find(item => item.id === zoneId);
+                const value = sensorState[zoneId][selectedAnalyticsMetric];
+                const threshold = selectedAnalyticsMetric === 'soil' ? zone.thresholds.soil : selectedAnalyticsMetric === 'temp' ? zone.thresholds.temp : spec.target;
+                const isLow = selectedAnalyticsMetric === 'soil' && value < threshold;
+                const meter = Math.min(100, Math.max(0, ((value - spec.min) / (spec.max - spec.min)) * 100));
+                return `<article class="comparison-card ${isLow ? 'is-low' : ''}"><h5>${zone.name}</h5><p>${zone.crop} · ${isLow ? 'Attention needed' : 'Within range'}</p><div class="comparison-value"><span>${value.toFixed(1)}</span><small>${spec.unit}</small></div><div class="comparison-meter"><span style="width:${meter}%"></span></div></article>`;
+            }).join('');
+        }
+
+        function toggleComparisonZone(zoneId) {
+            const button = document.querySelector(`[data-comparison-zone="${zoneId}"]`);
+            if (comparisonZoneIds.has(zoneId)) comparisonZoneIds.delete(zoneId);
+            else comparisonZoneIds.add(zoneId);
+            renderAnalyticsComparison();
+        }
+
+        function evaluatePredictiveAlert() {
+            const zone = ZONES.find(z => z.id === selectedZoneId);
+            const current = sensorState[selectedZoneId].soil;
+            const values = getAnalyticsValues('soil');
+            const projected = values[values.length - 1] + ((values[values.length - 1] - values[0]) / 6);
+            const isAlert = current < zone.thresholds.soil || projected < zone.thresholds.soil;
+            const alert = document.getElementById('analytics-alert');
+            alert.classList.toggle('hidden', !isAlert);
+            if (isAlert) {
+                document.getElementById('analytics-alert-message').innerText = `${zone.name} is at ${current.toFixed(1)}%. Moisture is projected to cross the ${zone.thresholds.soil}% irrigation trigger next.`;
+                if (window.Notification && Notification.permission === 'granted' && Date.now() - lastAnalyticsNotification > 900000) {
+                    new Notification('AgroSense moisture alert', { body: `${zone.name} is projected below optimal soil moisture.` });
+                    lastAnalyticsNotification = Date.now();
+                }
+            }
+        }
+
+        function enableAnalyticsNotifications() {
+            if (!window.Notification) return;
+            Notification.requestPermission().then(permission => {
+                const button = document.getElementById('analytics-notification-button');
+                button.innerText = permission === 'granted' ? 'Desktop alerts enabled' : 'Alerts blocked';
+                button.disabled = true;
+            });
+        }
+
+        function exportAnalyticsCSV() {
+            const spec = ANALYTICS_METRICS[selectedAnalyticsMetric];
+            const zone = ZONES.find(z => z.id === selectedZoneId);
+            const values = getAnalyticsValues();
+            const rows = [['AgroSense AI analytics report'], ['Field', zone.name], ['Metric', spec.label], ['Unit', spec.unit], [], ['Period', 'Value']];
+            values.forEach((value, index) => rows.push([index === values.length - 1 ? 'Now' : `${values.length - 1 - index} days ago`, value.toFixed(2)]));
+            const csv = rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(',')).join('\n');
+            const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+            const link = document.createElement('a'); link.href = url; link.download = `agrosense-${zone.name.toLowerCase().replaceAll(' ', '-')}-${selectedAnalyticsMetric}.csv`; link.click(); URL.revokeObjectURL(url);
+        }
+
+        function exportAnalyticsPDF() {
+            const spec = ANALYTICS_METRICS[selectedAnalyticsMetric];
+            const zone = ZONES.find(z => z.id === selectedZoneId);
+            const values = getAnalyticsValues();
+            const report = document.createElement('div');
+            report.style.cssText = 'width:720px;padding:36px;color:#17231f;background:#fbfcf8;font-family:Arial,sans-serif';
+            report.innerHTML = `<p style="font-size:11px;letter-spacing:2px;color:#1b5a42;font-weight:bold">AGROSENSE AI / FIELD ANALYTICS</p><h1 style="font-size:28px;margin:8px 0">${zone.name} trend report</h1><p style="color:#718078">${spec.label} · Generated ${new Date().toLocaleString()}</p><hr style="border:0;border-top:1px solid #dfe7df;margin:24px 0"><h2 style="font-size:18px">Current reading: ${sensorState[selectedZoneId][selectedAnalyticsMetric].toFixed(1)} ${spec.unit}</h2><p>Seven-day average: ${(values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(1)} ${spec.unit}</p><table style="width:100%;border-collapse:collapse;margin-top:24px"><tr><th style="text-align:left;border-bottom:1px solid #dfe7df;padding:10px">Period</th><th style="text-align:left;border-bottom:1px solid #dfe7df;padding:10px">Value</th></tr>${values.map((value, index) => `<tr><td style="padding:9px;border-bottom:1px solid #edf1ec">${index === values.length - 1 ? 'Now' : `${values.length - 1 - index} days ago`}</td><td style="padding:9px;border-bottom:1px solid #edf1ec">${value.toFixed(2)} ${spec.unit}</td></tr>`).join('')}</table>`;
+            document.body.appendChild(report);
+            html2pdf().from(report).set({ margin: 0, filename: `agrosense-${zone.name.toLowerCase().replaceAll(' ', '-')}-report.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'pt', format: 'a4' } }).save().then(() => report.remove());
+        }
+
         function renderAnalytics() {
             const zone = ZONES.find(z => z.id === selectedZoneId);
             const data = sensorState[selectedZoneId];
             const spec = ANALYTICS_METRICS[selectedAnalyticsMetric];
             const current = data[selectedAnalyticsMetric];
-            const values = spec.offsets.map((offset, index) => Math.max(spec.min, Math.min(spec.max, current + offset + Math.sin(index * 1.7) * (selectedAnalyticsMetric === 'light' ? 18 : .45))));
+            const values = getAnalyticsValues();
             const average = values.reduce((sum, value) => sum + value, 0) / values.length;
             const width = 640, baseline = 190, top = 18, chartHeight = baseline - top;
             const points = values.map((value, index) => `${20 + index * 100},${baseline - ((value - spec.min) / (spec.max - spec.min)) * chartHeight}`);
@@ -2942,6 +3075,8 @@ If the crop appears healthy, state that clearly and provide general care recomme
             if (selectedAnalyticsMetric === 'temp') takeaway = current > zone.thresholds.temp ? 'Thermal load is above the zone limit — plan cooling or shade.' : 'Temperature is within the zone’s operating envelope.';
             if (selectedAnalyticsMetric === 'light') takeaway = current > 1200 ? 'Light exposure is elevated — watch midday stress on tender crops.' : 'Light exposure is steady for the current crop cycle.';
             document.getElementById('analytics-takeaway').innerText = takeaway;
+            evaluatePredictiveAlert();
+            if (!document.getElementById('analytics-comparison').classList.contains('hidden')) renderAnalyticsComparison();
         }
 
         // --- SENSOR LOGIC ---

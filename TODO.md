@@ -14,6 +14,10 @@
 
 ## Add field analytics
 - [x] Add a seven-day trend chart to the Field Operations Console with selectable soil moisture, ambient temperature, and light metrics, live selected-zone context, current/average/target readouts, and an operational takeaway.
+- [x] Add CSV export for the selected field and analytics metric, including the seven-day values and report metadata.
+- [x] Add PDF export for a formatted analytics report using the existing browser PDF library.
+- [x] Add predictive soil-moisture alerts based on each zone's irrigation threshold, with an optional desktop notification permission flow.
+- [x] Add a comparison view with selectable zones and side-by-side cards that follow the active analytics metric.
 
 ## Verify and deliver
 - [ ] Build the existing static project successfully.
